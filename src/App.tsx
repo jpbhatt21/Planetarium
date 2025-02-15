@@ -23,19 +23,20 @@ import {
 	SelectValue,
 } from "./components/ui/select";
 import { Separator } from "./components/ui/separator";
+import { svg } from "./vectors";
 let anchor = 0;
 const version = "1.0.0";
 let object = {
-	name: "object1",
-	mass: 1,
+	name: "body 2",
+	mass: 100,
 	radius: 10,
 	position: { x: 100, y: 100 },
 	velocity: { x: 1, y: 0.0 },
 	static: false,
 	fixedColor: false,
-	color: "",
-	trailColor: "#5b5b5b",
-	futureColor: "#118911",
+	color: theme.nord.aurora.d,
+	trailColor: theme.nord.dark.b,
+	futureColor: theme.nord.aurora.b,
 };
 
 let planet = {
@@ -58,13 +59,14 @@ function setImportedData(data: any) {
 	predictionLimit = data.predictionLimit;
 	maxTrailLength = data.maxTrailLength;
 	deltaT = data.deltaT;
+	scale = data.scale;
 	set.G(data.G);
 	set.collisionEnergyLoss(data.collisionEnergyLoss);
 	prt = data.particles;
 	ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 	off = {
-		x: ctr.x - prt[0].position.x - 130,
-		y: ctr.y - prt[0].position.y,
+		x: ctr.x - prt[0].position.x * scale,
+		y: ctr.y - prt[0].position.y * scale,
 	};
 	initPath();
 }
@@ -103,7 +105,7 @@ let preset = [
 			objs[3].position.y = 1000;
 			let velz = [1, 1, -1, -1];
 			velz.forEach((o, i) => {
-				objs[i].name = "body " + (i + 1);
+				objs[i].name = "body " + (i +2);
 				objs[i].velocity.x = o;
 				objs[i].mass = 100;
 				let alpha = "abcd"[i] as keyof typeof theme.nord.frost;
@@ -207,7 +209,7 @@ let change: any = null;
 let bodyId: any = null;
 let mouseDown = false;
 let root = document.getElementById("root");
-root?.style.setProperty("background-position",`${off.x}px ${off.y}px`);
+root?.style.setProperty("background-position", `${off.x}px ${off.y}px`);
 function startSimulation(setParticles: any) {
 	if (interv != null) {
 		return;
@@ -238,11 +240,17 @@ function startSimulation(setParticles: any) {
 		setParticles([...prt]);
 	}, deltaT);
 }
-function scaledBG(){
-  return "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='"+150*scale+"' height='"+150*scale+"' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%231b1b1b' fill-opacity='1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
+function scaledBG() {
+	return (
+		"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='" +
+		150 * scale +
+		"' height='" +
+		150 * scale +
+		"' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%231b1b1b' fill-opacity='1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
+	);
 }
-
-root?.style.setProperty("background-image",scaledBG());
+let bodyId2: any = null;
+root?.style.setProperty("background-image", scaledBG());
 function App() {
 	const [particles, setParticles] = useState([...prt]);
 
@@ -263,14 +271,15 @@ function App() {
 	}
 	if (
 		(offset.x != center.x - particles[anchor].position.x * scale ||
-		offset.y != center.y - particles[anchor].position.y * scale)&&!mouseDown
+			offset.y != center.y - particles[anchor].position.y * scale) &&
+		!mouseDown
 	) {
 		off = {
 			x: center.x - prt[anchor].position.x * scale,
 			y: center.y - prt[anchor].position.y * scale,
 		};
-    root?.style.setProperty("background-position",`${off.x}px ${off.y}px`);
-    root?.style.setProperty("background-image",scaledBG());
+		root?.style.setProperty("background-position", `${off.x}px ${off.y}px`);
+		root?.style.setProperty("background-image", scaledBG());
 		setOffset(off);
 	}
 
@@ -291,19 +300,38 @@ function App() {
 						prt[bodyId].position.y = (e.clientY - off.y) / scale;
 						setParticles([...prt]);
 						initPath();
-					},1);
+					}, 1);
 				}
 			}
+      if(bodyId2!==null){
+        let body = document.getElementById("velocity" + bodyId2);
+        if (body != null && mouseDown) {
+          clearInterval(interv);
+          interv = null;
+          body.setAttribute("cx", (e.clientX - off.x).toString());
+          body.setAttribute("cy", (e.clientY - off.y).toString());
+          if (change != null) {
+            clearTimeout(change);
+          }
+          change = setTimeout(() => {
+            prt[bodyId2].velocity.x = ((e.clientX - off.x) / scale - prt[bodyId2].position.x)/250;
+            prt[bodyId2].velocity.y = ((e.clientY - off.y) / scale - prt[bodyId2].position.y)/250;
+            setParticles([...prt]);
+            initPath();
+          }, 1);
+        }
+      }
 		});
-		window.addEventListener("mouseup", (e) => {
+		window.addEventListener("mouseup", () => {
 			mouseDown = false;
-			if (bodyId == null) return;
-			prt[bodyId].position.x = (e.clientX - off.x) / scale;
-			prt[bodyId].position.y = (e.clientY - off.y) / scale;
+			// if (bodyId == null) 
+			// prt[bodyId].position.x = (e.clientX - off.x) / scale;
+			// prt[bodyId].position.y = (e.clientY - off.y) / scale;
 
-			setParticles([...prt]);
-			initPath();
+			// setParticles([...prt]);
+			// initPath();
 			bodyId = null;
+      bodyId2=null;
 		});
 		window.addEventListener("keydown", (e) => {
 			let id = e.target as any;
@@ -318,13 +346,19 @@ function App() {
 				showFuture = !showFuture;
 				setParticles([...prt]);
 			}
-			if (e.key == "s") {
-				startSimulation(setParticles);
+			if (e.key == " ") {
+				if(interv==null)
+          startSimulation(setParticles);
+        else{
+          clearInterval(interv);
+          interv = null;
+          setCenter({
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+          })
+        }
 			}
-			if (e.key == "c") {
-				clearInterval(interv);
-				interv = null;
-			}
+			
 			if (e.key == "i") {
 				initPath();
 				setParticles([...prt]);
@@ -334,7 +368,7 @@ function App() {
 	return (
 		<>
 			<svg
-				className="absolute"
+				className="absolute fadein"
 				style={{ top: 0, left: 0 }}
 				viewBox={`${-offset.x} ${-offset.y} ${window.innerWidth} ${
 					window.innerHeight
@@ -361,27 +395,59 @@ function App() {
 					})}
 				{particles.map((particle, index) => {
 					return (
-						<circle
-							id={"body" + index}
-							onMouseDown={() => {
-								bodyId = index;
-								mouseDown = true;
-							}}
-							key={index}
-							cx={particle.position.x * scale}
-							cy={particle.position.y * scale}
-							r={particle.radius * scale}
-							fill={
-								particle.fixedColor
-									? particle.color
-									: getColor(particle.velocity)
-							}
-							stroke={theme.nord.light.a}
-						/>
+						<g>
+							<circle
+								id={"body" + index}
+								onMouseDown={() => {
+									bodyId = index;
+									mouseDown = true;
+								}}
+								key={index}
+								cx={particle.position.x * scale}
+								cy={particle.position.y * scale}
+								r={particle.radius * scale}
+								fill={
+									particle.fixedColor
+										? particle.color
+										: getColor(particle.velocity)
+								}
+								stroke={theme.nord.dark.d}
+                strokeWidth={1}
+							/>
+							{interv==null&&<path
+								d={
+									"M " +
+									particle.position.x * scale +
+									" " +
+									particle.position.y * scale +
+									" l " +
+									particle.velocity.x * 250 * scale +
+									" " +
+									particle.velocity.y * 250 * scale
+								}
+								stroke="#505050"
+                strokeOpacity={0.5}
+								strokeWidth={2}></path>}
+              {interv==null&&<circle
+                cx={(particle.position.x+particle.velocity.x * 250) * scale}
+                cy={(particle.position.y+particle.velocity.y * 250) * scale}
+                r={5 }
+                fill="#505050"
+                fillOpacity={0.5}
+                id={"velocity"+index}
+                stroke={theme.nord.light.a}
+                strokeOpacity={0.5}
+
+                onMouseDown={() => {
+                  bodyId2=index;
+                  mouseDown = true;
+                }}
+              />}
+						</g>
 					);
 				})}
 			</svg>
-			<div className="absolute p-2 w-80 h-full flex flex-col text-white gap-2">
+			<div className="absolute fadein p-2 w-80 h-full flex flex-col text-white gap-2">
 				<Card className="w-full flex flex-col">
 					{/* <Button variant="outline" className=" border-[#bf616a]" onClick={() => {
             prt = preset[0]();
@@ -414,7 +480,7 @@ function App() {
 							/>
 						</p>
 						<p className="flex  justify-between h-fit items-center">
-							Prediction Limit
+							Forecast Limit
 							<Input
 								type="number"
 								value={predictionLimit}
@@ -633,6 +699,7 @@ function App() {
 									G: get.G(),
 									collisionEnergyLoss:
 										get.collisionEnergyLoss(),
+									scale,
 								});
 								navigator.clipboard.writeText(data);
 								alert("Copied to clipboard");
@@ -653,6 +720,7 @@ function App() {
 									G: get.G(),
 									collisionEnergyLoss:
 										get.collisionEnergyLoss(),
+									scale,
 								});
 								let blob = new Blob([data], {
 									type: "text/plain",
@@ -670,8 +738,8 @@ function App() {
 				</Card>
 			</div>
 
-			<div className="absolute bottom-2 left-2  gap-1 flex flex-col  text-white "></div>
-			<div className="absolute h-full w-84 overflow-y-scroll pl- top-0 right-0 flex gap-2 flex-col text-white p-2">
+			<div className="absolute fadein bottom-2 left-2  gap-1 flex flex-col  text-white "></div>
+			<div className="absolute fadein h-full w-84 overflow-y-scroll pl- top-0 right-0 flex gap-2 flex-col text-white p-2">
 				{particles.map((particle, index) => {
 					return (
 						<Card className="">
@@ -794,7 +862,7 @@ function App() {
 									</p>
 								</div>
 								<p className="flex  justify-between h-fit items-center">
-									Static
+									Static Body
 									<Checkbox
 										defaultChecked={particle.static}
 										onCheckedChange={(checked) => {
@@ -816,22 +884,17 @@ function App() {
 									/>
 								</p>
 								<p className="flex  justify-between h-fit items-center">
-									Color
+									Body Color
 									<Input
 										type="color"
 										className="w-1/2"
 										value={particle.color}
+                    
 										onChange={(e) => {
-											if (change != null) {
-												clearTimeout(change);
-											}
-											change = setTimeout(() => {
-												prt[index].color =
-													e.target.value;
-												setParticles([...prt]);
-												initPath();
-												change = null;
-											}, 10);
+                      console.log(e.currentTarget.value)
+                      prt[index].color = e.currentTarget.value;
+                      setParticles([...prt]);
+                      
 										}}
 									/>
 								</p>
@@ -842,36 +905,20 @@ function App() {
 										className="w-1/2"
 										value={particle.trailColor}
 										onChange={(e) => {
-											if (change != null) {
-												clearTimeout(change);
-											}
-											change = setTimeout(() => {
-												prt[index].trailColor =
-													e.target.value;
-												setParticles([...prt]);
-												initPath();
-												change = null;
-											}, 10);
+											prt[index].trailColor = e.currentTarget.value;
+                      setParticles([...prt]);
 										}}
 									/>
 								</p>
 								<p className="flex  justify-between h-fit items-center">
-									Future Color
+									Forecast Color
 									<Input
 										type="color"
 										className="w-1/2"
 										value={particle.futureColor}
 										onChange={(e) => {
-											if (change != null) {
-												clearTimeout(change);
-											}
-											change = setTimeout(() => {
-												prt[index].futureColor =
-													e.target.value;
-												setParticles([...prt]);
-												initPath();
-												change = null;
-											}, 10);
+											prt[index].futureColor = e.currentTarget.value;
+                      setParticles([...prt]);
 										}}
 									/>
 								</p>
@@ -947,6 +994,12 @@ function App() {
 					}}>
 					Add Body
 				</Button>
+			</div>
+			<div
+				className=" fixed  top-5 left-1/2 fadein -translate-x-1/2 prt  flex justify-center items-center gap-2"
+				style={{ animationDuration: "3s" }}>
+				{svg.logo({ height: "40px", width: "40px" })}
+				<label className=" mts text-xl"> Planaterium</label>
 			</div>
 		</>
 	);

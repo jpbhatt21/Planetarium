@@ -15,6 +15,7 @@ function distance(p1:Vector, p2:Vector) {
 	);
 }
 let collisionEnergyLoss = 0.01;
+let collisionMassTransfer = 0.01;
 let G=0.0667
 export const get={
     collisionEnergyLoss:()=>collisionEnergyLoss,
@@ -42,12 +43,24 @@ function gravity(p1:Body, p2:Body) {
 function collision(p1: Body, p2: Body): { p1: Body; p2: Body } {
     if(p1.mass === 0 || p2.mass === 0)
         return {p1, p2};
+   
 	// Calculate difference between positions
 	const dx = p2.position.x - p1.position.x;
 	const dy = p2.position.y - p1.position.y;
 	const distance = Math.sqrt(dx * dx + dy * dy);
 
 	if (distance < p1.radius + p2.radius) {
+        if(p1.mass>p2.mass){
+            p1.mass+=p2.mass*collisionMassTransfer;
+            p2.mass-=p2.mass*collisionMassTransfer;
+            p1.radius=Math.sqrt(p1.radius*p1.radius+p2.radius*p2.radius*collisionMassTransfer*collisionMassTransfer);
+            p2.radius=Math.sqrt(p2.radius*p2.radius-p2.radius*p2.radius*collisionMassTransfer*collisionMassTransfer);
+        }else{
+            p2.mass+=p1.mass*collisionMassTransfer;
+            p1.mass-=p1.mass*collisionMassTransfer;
+            p2.radius=Math.sqrt(p2.radius*p2.radius+p1.radius*p1.radius*collisionMassTransfer*collisionMassTransfer);
+            p1.radius=Math.sqrt(p1.radius*p1.radius-p1.radius*p1.radius*collisionMassTransfer*collisionMassTransfer);
+        }
 		// Calculate the collision angle (normal)
 		const angle = Math.atan2(dy, dx);
 		// Calculate overlap and adjust positions to avoid sinking
