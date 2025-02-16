@@ -284,6 +284,12 @@ function App() {
 	}
 
 	useEffect(() => {
+    window.addEventListener("resize", () => {
+      ctr={x:window.innerWidth/2,y:window.innerHeight/2};
+      setCenter(ctr);
+      
+    
+    });
 		window.addEventListener("mousemove", (e) => {
 			if (bodyId != null) {
 				let body = document.getElementById("body" + bodyId);
