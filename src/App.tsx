@@ -97,7 +97,7 @@ function App() {
 		x: center.x - bodies[0].position.x * scale,
 		y: center.y - bodies[0].position.y * scale,
 	});
-	
+	scale=getVars.scale()
 	if (
 		(offset.x != center.x - particles[anchor].position.x * scale ||
 			offset.y != center.y - particles[anchor].position.y * scale) &&
@@ -109,7 +109,7 @@ function App() {
 		};
 		setOffset(off);
 	}
-  scale=getVars.scale()
+  
   bodies = getVars.bodies();
   setVars.interv(interv);
  let temp=getVars.anchor()
@@ -190,7 +190,9 @@ function App() {
 		window.addEventListener("wheel", (e) => {
 			let target = e.target as HTMLElement;
 			if (target.id == "svg") {
-				scale -= e.deltaY / 1000;
+        console.log(scale)
+				scale -= e.deltaY / (scale>1?1000:scale>0.1?10000:100000);
+        if(scale<=0) scale=0.01;
         setVars.scale(scale);
 				let ele = document.getElementById("scale") as HTMLInputElement;
 				if (ele) ele.value = (scale * 100).toFixed(2);
