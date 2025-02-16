@@ -3,6 +3,7 @@ export const svg={
         fill="#d1d3d4"
         height="80px"
         width="80px"
+        className="min-w-fit min-h-fit"
         id="Layer_1"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
