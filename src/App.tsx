@@ -60,6 +60,8 @@ function setImportedData(data: any) {
 	maxTrailLength = data.maxTrailLength;
 	deltaT = data.deltaT;
 	scale = data.scale;
+	let ele = document.getElementById("scale") as HTMLInputElement;
+	if (ele) ele.value = (scale * 100).toString();
 	set.G(data.G);
 	set.collisionEnergyLoss(data.collisionEnergyLoss);
 	prt = data.particles;
@@ -73,7 +75,7 @@ function setImportedData(data: any) {
 let preset = [
 	{
 		name: "Planet",
-    scale:0.5,
+		scale: 0.5,
 		data: () => {
 			return [JSON.parse(JSON.stringify(planet))];
 		},
@@ -86,11 +88,11 @@ let preset = [
 				JSON.parse(JSON.stringify(object)),
 			];
 		},
-    scale:0.5
+		scale: 0.5,
 	},
 	{
 		name: "5 Bodies",
-    scale:0.5,
+		scale: 0.5,
 		data: () => {
 			let objs = "0000".split("").map(() => {
 				return JSON.parse(JSON.stringify(object));
@@ -162,7 +164,7 @@ let preset = [
 					trailColor: "#3b4252",
 					futureColor: "#ebcb8b",
 				},
-        {
+				{
 					name: "earth",
 					mass: 10,
 					radius: 60,
@@ -200,7 +202,7 @@ let preset = [
 				},
 			];
 		},
-    scale:0.1
+		scale: 0.1,
 	},
 ];
 let prt = preset[1].data();
@@ -218,11 +220,11 @@ paths.shift();
 let futurePositions: any = [];
 let predictionLimit = 5000;
 let maxTrailLength = 1000;
-let deltaT = 10;
+let deltaT = 0;
 let t1 = new Date().getTime();
 let t2 = new Date().getTime();
 function initPath() {
-  t1=new Date().getTime();
+	t1 = new Date().getTime();
 	futurePositions = [];
 	initialPositions = JSON.parse(JSON.stringify(prt));
 	pastPositions = prt.map((p: any) => {
@@ -244,14 +246,12 @@ function initPath() {
 			paths[j].push([temp[j].position.x, temp[j].position.y]);
 		}
 	}
-  t2=new Date().getTime();
-  console.log("Prediction time:",t2-t1+"ms");  
+	t2 = new Date().getTime();
+	console.log("Prediction time:", t2 - t1 + "ms");
 }
 
 initPath();
-predictionLimit = Math.floor(
-	((predictionLimit * (deltaT / 250)) / (t2 - t1)) * 1000
-);
+predictionLimit = Math.floor((predictionLimit / (t2 - t1)) * 50);
 initPath();
 function setPath() {
 	let temp = [...futurePositions[futurePositions.length - 1]];
@@ -282,11 +282,10 @@ function getColor(velocity: any) {
 	let b = min.b + Math.floor(vel * (max.b - min.b));
 	return `rgb(${r},${g},${b})`;
 }
-
 let showTrail = true;
 let showFuture = !false;
 let interv: any = null;
-let scale = preset[1 ].scale
+let scale = preset[1].scale;
 let ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 let off = {
 	x: ctr.x - prt[0].position.x * scale,
@@ -302,13 +301,14 @@ function startSimulation(setParticles: any) {
 	if (interv != null) {
 		return;
 	}
-	let delta = Math.max(deltaT, 10);
+	let delta = 10;
 	let delta2 = 1;
-	if (deltaT < 10) {
-		delta2 = 10 - deltaT;
+	if (deltaT < 0) {
+		delta = 10 * (1 - deltaT);
+	} else {
+		delta2 = deltaT + 1;
 	}
-	delta2 = Math.min(delta2, 10);
-	console.log(delta, delta2);
+
 	interv = setInterval(() => {
 		for (let i = 0; i < delta2; i++) {
 			for (let i = 0; i < prt.length; i++) {
@@ -349,6 +349,7 @@ function scaledBG() {
 		"' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%231b1b1b' fill-opacity='1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
 	);
 }
+
 let bodyId2: any = null;
 root?.style.setProperty("background-image", scaledBG());
 function App() {
@@ -384,11 +385,7 @@ function App() {
 	}
 
 	useEffect(() => {
-		window.addEventListener("resize", () => {
-			ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-			setCenter(ctr);
-		});
-		window.addEventListener("mousemove", (e) => {
+		function move(e: any) {
 			if (bodyId != null) {
 				let body = document.getElementById("body" + bodyId);
 				if (body != null && mouseDown) {
@@ -431,6 +428,17 @@ function App() {
 					}, 1);
 				}
 			}
+		}
+		window.addEventListener("resize", () => {
+			ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+			setCenter(ctr);
+		});
+		window.addEventListener("mousemove", move);
+		window.addEventListener("touchmove", move);
+		window.addEventListener("touchend", () => {
+			mouseDown = false;
+			bodyId = null;
+			bodyId2 = null;
 		});
 		window.addEventListener("mouseup", () => {
 			mouseDown = false;
@@ -443,8 +451,45 @@ function App() {
 			bodyId = null;
 			bodyId2 = null;
 		});
+
+		window.addEventListener("wheel", (e) => {
+			let target = e.target as HTMLElement;
+			if (target.id == "svg") {
+				scale -= e.deltaY / 1000;
+				let ele = document.getElementById("scale") as HTMLInputElement;
+				if (ele) ele.value = (scale * 100).toString();
+				off = {
+					x: center.x - prt[0].position.x * scale,
+					y: center.y - prt[0].position.y * scale,
+				};
+				root?.style.setProperty(
+					"background-position",
+					`${off.x}px ${off.y}px`
+				);
+				root?.style.setProperty("background-image", scaledBG());
+				setOffset(off);
+			} else if (target.id.includes("body")) {
+				if (change != null) clearTimeout(change);
+				if (e.shiftKey) {
+					change = setTimeout(() => {
+						prt[parseInt(target.id.replace("body", ""))].mass -=
+							e.deltaY;
+						setParticles([...prt]);
+						initPath();
+					}, 10);
+				} else {
+					change = setTimeout(() => {
+						prt[parseInt(target.id.replace("body", ""))].radius -=
+							e.deltaY / 20;
+						setParticles([...prt]);
+						initPath();
+					}, 10);
+				}
+			}
+		});
 		window.addEventListener("keydown", (e) => {
 			let id = e.target as any;
+
 			if (id.id === "pastebox") {
 				return;
 			}
@@ -477,6 +522,7 @@ function App() {
 	return (
 		<>
 			<svg
+				id="svg"
 				className="absolute fadein"
 				style={{ top: 0, left: 0 }}
 				viewBox={`${-offset.x} ${-offset.y} ${window.innerWidth} ${
@@ -489,6 +535,7 @@ function App() {
 								d={getSVGPath(path, { x: 0, y: 0 })}
 								fill="none"
 								stroke={prt[index].futureColor}
+								strokeWidth={"1px"}
 							/>
 						);
 					})}
@@ -507,9 +554,41 @@ function App() {
 						<g>
 							<circle
 								id={"body" + index}
+								style={{
+									transition:
+										interv !== null && deltaT < 0
+											? "all " + 10 * (1 - deltaT) + "ms"
+											: "",
+								}}
 								onMouseDown={() => {
+									if (interv != null) return;
 									bodyId = index;
 									mouseDown = true;
+								}}
+								onTouchStart={() => {
+									if (interv != null) return;
+									bodyId = index;
+									mouseDown = true;
+								}}
+								onClick={() => {
+									anchor = index;
+									off = {
+										x:
+											center.x -
+											prt[anchor].position.x * scale,
+										y:
+											center.y -
+											prt[anchor].position.y * scale,
+									};
+									root?.style.setProperty(
+										"background-position",
+										`${off.x}px ${off.y}px`
+									);
+									root?.style.setProperty(
+										"background-image",
+										scaledBG()
+									);
+									setOffset(off);
 								}}
 								key={index}
 								cx={particle.position.x * scale}
@@ -573,7 +652,7 @@ function App() {
 					);
 				})}
 			</svg>
-			<div className="absolute fadein p-2 w-80 h-full flex flex-col text-white gap-2">
+			<div className="absolute fadein p-2 w-80 h-full overflow-y-scroll flex flex-col text-white gap-2">
 				<Card className="w-full flex flex-col">
 					{/* <Button variant="outline" className=" border-[#bf616a]" onClick={() => {
             prt = preset[0]();
@@ -585,7 +664,7 @@ function App() {
 					</CardHeader>
 					<CardContent className="flex flex-col gap-2">
 						<p className="flex  justify-between h-fit items-center">
-							Delta T (ms)
+							Speed
 							<Input
 								type="number"
 								value={deltaT}
@@ -621,7 +700,7 @@ function App() {
 							/>
 						</p>
 						<p className="flex  justify-between h-fit items-center">
-							Max Trail Length
+							Trail Limit
 							<Input
 								type="number"
 								value={maxTrailLength}
@@ -672,17 +751,21 @@ function App() {
 							Scale
 							<Input
 								type="number"
-								value={scale * 100}
+								id="scale"
+								defaultValue={scale * 100}
 								step={0.1}
 								onChange={(e) => {
-									scale = Math.max(
-										0.001,
-										parseFloat(e.target.value) / 100
-									);
-									setCenter({
-										x: window.innerWidth / 2,
-										y: window.innerHeight / 2,
-									});
+									let val = 0;
+									try {
+										val = parseFloat(e.target.value) / 100;
+										if (val > 0) {
+											scale = val;
+											setCenter({
+												x: window.innerWidth / 2,
+												y: window.innerHeight / 2,
+											});
+										}
+									} catch {}
 								}}
 							/>
 						</p>
@@ -730,17 +813,25 @@ function App() {
 							return (
 								<Button
 									variant="outline"
-									onClick={() => {
+									onClick={(e) => {
 										prt = JSON.parse(
 											JSON.stringify(p.data())
 										);
-                    scale = p.scale
+										scale = p.scale;
+										let ele = document.getElementById(
+											"scale"
+										) as HTMLInputElement;
+										if (ele)
+											ele.value = (
+												scale * 100
+											).toString();
 										initPath();
 										setParticles([...prt]);
 										setCenter({
 											x: window.innerWidth / 2,
 											y: window.innerHeight / 2,
 										});
+										e.currentTarget.blur();
 									}}>
 									{p.name}
 								</Button>
@@ -819,7 +910,7 @@ function App() {
 						<Button
 							variant="outline"
 							className="w-1/2"
-							onClick={() => {
+							onClick={(e) => {
 								let data = JSON.stringify({
 									version,
 									particles: initialPositions,
@@ -833,6 +924,7 @@ function App() {
 								});
 								navigator.clipboard.writeText(data);
 								alert("Copied to clipboard");
+								e.currentTarget.blur();
 							}}>
 							Copy
 						</Button>
@@ -840,7 +932,7 @@ function App() {
 						<Button
 							variant="outline"
 							className="w-1/2 "
-							onClick={() => {
+							onClick={(e) => {
 								let data = JSON.stringify({
 									version,
 									particles: initialPositions,
@@ -861,6 +953,7 @@ function App() {
 								a.download = "config.json";
 								a.click();
 								URL.revokeObjectURL(url);
+								e.currentTarget.blur();
 							}}>
 							Download
 						</Button>
@@ -1058,7 +1151,7 @@ function App() {
 								<Button
 									variant="outline"
 									className=" "
-									onClick={() => {
+									onClick={(e) => {
 										let ref = {
 											x: prt[index].position.x,
 											y: prt[index].position.y,
@@ -1109,19 +1202,21 @@ function App() {
 										paths.push([]);
 										setParticles([...prt]);
 										initPath();
+										e.currentTarget.blur();
 									}}>
 									Duplicate
 								</Button>
 								<Button
 									variant="outline"
 									className=" border-[#bf616a80]"
-									onClick={() => {
+									onClick={(e) => {
 										prt.splice(index, 1);
 										pastPositions.splice(index, 1);
 										count.splice(index, 1);
 										paths.splice(index, 1);
 										setParticles([...prt]);
 										initPath();
+										e.currentTarget.blur();
 									}}>
 									Delete
 								</Button>
@@ -1132,8 +1227,8 @@ function App() {
 
 				<Button
 					variant="outline"
-					className=" border-[#a3be8c]"
-					onClick={() => {
+					className=" border-[#a3be8c80]"
+					onClick={(e) => {
 						let ref = {
 							x: particles[0].position.x,
 							y: particles[0].position.y,
@@ -1179,6 +1274,7 @@ function App() {
 						paths.push([]);
 						setParticles([...prt]);
 						initPath();
+						e.currentTarget.blur();
 					}}>
 					Add Body
 				</Button>
@@ -1187,7 +1283,64 @@ function App() {
 				className=" fixed  top-5 left-1/2 fadein -translate-x-1/2 prt  flex justify-center items-center gap-2"
 				style={{ animationDuration: "3s" }}>
 				{svg.logo({ height: "40px", width: "40px" })}
-				<label className=" mts text-xl"> Planaterium</label>
+				<div className=" flex flex-col mts text-xl justify-center">
+					<label> Planaterium</label>
+					{/* <label className=" tracking-wider"> Playground</label> */}
+				</div>
+			</div>
+			<div className="w-20 flex flex-col gap-2 absolute top-2 right-[21rem]">
+				<Button
+					variant="outline"
+					className=" w-full]"
+					style={{
+						borderColor: interv == null ? "#a3be8c80" : "#bf616a80",
+					}}
+					onClick={(e) => {
+						if (interv == null) startSimulation(setParticles);
+						else {
+							clearInterval(interv);
+							interv = null;
+							setCenter({
+								x: window.innerWidth / 2,
+								y: window.innerHeight / 2,
+							});
+						}
+						e.currentTarget.blur();
+					}}>
+					{interv == null ? "Play" : "Pause"}
+				</Button>
+				<Button
+					variant="outline"
+					className=" w-full "
+					style={{
+						borderColor: showTrail ? "#a3be8c80" : "#bf616a80",
+					}}
+					onClick={(e) => {
+						showTrail = !showTrail;
+						setCenter({
+							x: window.innerWidth / 2,
+							y: window.innerHeight / 2,
+						});
+						e.currentTarget.blur();
+					}}>
+					Trail
+				</Button>
+				<Button
+					variant="outline"
+					className=" w-full "
+					style={{
+						borderColor: showFuture ? "#a3be8c80" : "#bf616a80",
+					}}
+					onClick={(e) => {
+						showFuture = !showFuture;
+						setCenter({
+							x: window.innerWidth / 2,
+							y: window.innerHeight / 2,
+						});
+						e.currentTarget.blur();
+					}}>
+					Forecast
+				</Button>
 			</div>
 		</>
 	);

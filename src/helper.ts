@@ -9,25 +9,24 @@ interface Body {
 	mass: number;
 	static: boolean;
 }
-function distance(p1:Vector, p2:Vector) {
+function distance(p1: Vector, p2: Vector) {
 	return Math.sqrt(
 		(p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y)
 	);
 }
 let collisionEnergyLoss = 0.01;
 let collisionMassTransfer = 0.01;
-let G=0.0667
-export const get={
-    collisionEnergyLoss:()=>collisionEnergyLoss,
-    G:()=>G
-}
-export const set={
-    collisionEnergyLoss:(value:number)=>collisionEnergyLoss=value,
-    G:(value:number)=>G=value
-}
-function gravity(p1:Body, p2:Body) {
-    if(p1.mass === 0 || p2.mass === 0)
-        return {x: 0, y: 0};
+let G = 0.0667;
+export const get = {
+	collisionEnergyLoss: () => collisionEnergyLoss,
+	G: () => G,
+};
+export const set = {
+	collisionEnergyLoss: (value: number) => (collisionEnergyLoss = value),
+	G: (value: number) => (G = value),
+};
+function gravity(p1: Body, p2: Body) {
+	if (p1.mass === 0 || p2.mass === 0) return { x: 0, y: 0 };
 
 	let r = distance(p1.position, p2.position);
 	let force = (G * p1.mass * p2.mass) / (r * r);
@@ -41,26 +40,49 @@ function gravity(p1:Body, p2:Body) {
 }
 
 function collision(p1: Body, p2: Body): { p1: Body; p2: Body } {
-    if(p1.mass === 0 || p2.mass === 0)
-        return {p1, p2};
-   
+	if (p1.mass === 0 || p2.mass === 0) return { p1, p2 };
+
 	// Calculate difference between positions
 	const dx = p2.position.x - p1.position.x;
 	const dy = p2.position.y - p1.position.y;
 	const distance = Math.sqrt(dx * dx + dy * dy);
 
 	if (distance < p1.radius + p2.radius) {
-        if(p1.mass>p2.mass){
-            p1.mass+=p2.mass*collisionMassTransfer;
-            p2.mass-=p2.mass*collisionMassTransfer;
-            p1.radius=Math.sqrt(p1.radius*p1.radius+p2.radius*p2.radius*collisionMassTransfer*collisionMassTransfer);
-            p2.radius=Math.sqrt(p2.radius*p2.radius-p2.radius*p2.radius*collisionMassTransfer*collisionMassTransfer);
-        }else{
-            p2.mass+=p1.mass*collisionMassTransfer;
-            p1.mass-=p1.mass*collisionMassTransfer;
-            p2.radius=Math.sqrt(p2.radius*p2.radius+p1.radius*p1.radius*collisionMassTransfer*collisionMassTransfer);
-            p1.radius=Math.sqrt(p1.radius*p1.radius-p1.radius*p1.radius*collisionMassTransfer*collisionMassTransfer);
-        }
+		if (p1.mass > p2.mass) {
+			p1.mass += p2.mass * collisionMassTransfer;
+			p2.mass -= p2.mass * collisionMassTransfer;
+			p1.radius = Math.sqrt(
+				p1.radius * p1.radius +
+					p2.radius *
+						p2.radius *
+						collisionMassTransfer *
+						collisionMassTransfer
+			);
+			p2.radius = Math.sqrt(
+				p2.radius * p2.radius -
+					p2.radius *
+						p2.radius *
+						collisionMassTransfer *
+						collisionMassTransfer
+			);
+		} else {
+			p2.mass += p1.mass * collisionMassTransfer;
+			p1.mass -= p1.mass * collisionMassTransfer;
+			p2.radius = Math.sqrt(
+				p2.radius * p2.radius +
+					p1.radius *
+						p1.radius *
+						collisionMassTransfer *
+						collisionMassTransfer
+			);
+			p1.radius = Math.sqrt(
+				p1.radius * p1.radius -
+					p1.radius *
+						p1.radius *
+						collisionMassTransfer *
+						collisionMassTransfer
+			);
+		}
 		// Calculate the collision angle (normal)
 		const angle = Math.atan2(dy, dx);
 		// Calculate overlap and adjust positions to avoid sinking
@@ -107,65 +129,68 @@ function collision(p1: Body, p2: Body): { p1: Body; p2: Body } {
 		p2.velocity.y =
 			Math.sin(angle) * finalV2x +
 			Math.cos(angle) * finalV2y * (1 - collisionEnergyLoss);
-		if(p1.mass<p2.mass){
-            if(Math.abs(p1.velocity.x-p2.velocity.x) < 0.5)
-                p1.velocity.x = 0;
-            if(Math.abs(p1.velocity.y-p2.velocity.y) < 0.5)
-                p1.velocity.y = 0;
-            if ( p1.velocity.x === 0 && p1.velocity.y === 0) {
-                p2.mass += p1.mass;
-                p1.mass = 0;
-                p1.static = true;
-                p2.radius=Math.sqrt(p1.radius*p1.radius+p2.radius*p2.radius);
-                p1.radius = 0;
-            }
-        }
-        else{
-            if(Math.abs(p1.velocity.x-p2.velocity.x) < 0.5)
-                p2.velocity.x = 0;
-            if(Math.abs(p1.velocity.y-p2.velocity.y) < 0.5)
-                p2.velocity.y = 0;
-            if (
-                p2.velocity.x === 0 &&
-                p2.velocity.y === 0
-            ) {
-                p1.mass += p2.mass;
-                p2.mass = 0;
-                p1.radius=Math.sqrt(p1.radius*p1.radius+p2.radius*p2.radius);
-                p2.radius = 0;
-                p2.static = true;
-            }
-        }
-		
+		if (p1.mass < p2.mass) {
+			if (Math.abs(p1.velocity.x - p2.velocity.x) < 0.5)
+				p1.velocity.x = 0;
+			if (Math.abs(p1.velocity.y - p2.velocity.y) < 0.5)
+				p1.velocity.y = 0;
+			if (p1.velocity.x === 0 && p1.velocity.y === 0) {
+				p2.mass += p1.mass;
+				p1.mass = 0;
+				p1.static = true;
+				p2.radius = Math.sqrt(
+					p1.radius * p1.radius + p2.radius * p2.radius
+				);
+				p1.radius = 0;
+			}
+		} else {
+			if (Math.abs(p1.velocity.x - p2.velocity.x) < 0.5)
+				p2.velocity.x = 0;
+			if (Math.abs(p1.velocity.y - p2.velocity.y) < 0.5)
+				p2.velocity.y = 0;
+			if (p2.velocity.x === 0 && p2.velocity.y === 0) {
+				p1.mass += p2.mass;
+				p2.mass = 0;
+				p1.radius = Math.sqrt(
+					p1.radius * p1.radius + p2.radius * p2.radius
+				);
+				p2.radius = 0;
+				p2.static = true;
+			}
+		}
 	}
 	return { p1, p2 };
 }
 function simulate(particles: any) {
-	particles = particles.map((particle: any) => {
-		if (particle.static || particle.mass === 0) {
-			return particle;
-		}
-		let force = { x: 0, y: 0 };
-		particles.forEach((p: any) => {
-			if (p !== particle&&p.mass!==0) {
-				let g = gravity(particle, p);
-				force.x += g.x;
-				force.y += g.y;
-			}
-		});
-		particle.velocity.x += force.x / particle.mass;
-		particle.velocity.y += force.y / particle.mass;
-		particle.position.x += particle.velocity.x;
-		particle.position.y += particle.velocity.y;
-		// if(Math.abs(particle.velocity.x) > maxVelocities.x){
-		//   maxVelocities.x = Math.abs(particle.velocity.x);
-		// }
-		// if(Math.abs(particle.velocity.y) > maxVelocities.y){
-		//   maxVelocities.y = Math.abs(particle.velocity.y);
-		// }
-
-		return particle;
+	let forces: any = particles.map(() => {
+		return { x: 0, y: 0 };
 	});
+	for (let i = 0; i < particles.length; i++) {
+		for (let j = i + 1; j < particles.length; j++) {
+			if (
+				particles[j].mass === 0 ||
+				particles[i].mass === 0 ||
+				(particles[j].static && particles[i].static)
+			)
+				continue;
+			let g = gravity(particles[i], particles[j]);
+			if (!particles[i].static) {
+				forces[i].x += g.x;
+				forces[i].y += g.y;
+			}
+			if (!particles[j].static) {
+				forces[j].x -= g.x;
+				forces[j].y -= g.y;
+			}
+		}
+	}
+	for (let i = 0; i < particles.length; i++) {
+		if (particles[i].static) continue;
+		particles[i].velocity.x += forces[i].x / particles[i].mass;
+		particles[i].velocity.y += forces[i].y / particles[i].mass;
+		particles[i].position.x += particles[i].velocity.x;
+		particles[i].position.y += particles[i].velocity.y;
+	}
 	for (let i = 0; i < particles.length; i++) {
 		for (let j = i + 1; j < particles.length; j++) {
 			let { p1, p2 } = collision(particles[i], particles[j]);
@@ -175,4 +200,5 @@ function simulate(particles: any) {
 	}
 	return particles;
 }
+
 export { distance, gravity, collision, simulate };
