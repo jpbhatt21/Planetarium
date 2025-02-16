@@ -214,31 +214,40 @@ function startSimulation(setParticles: any) {
 	if (interv != null) {
 		return;
 	}
+  let delta=Math.max(deltaT, 10)
+  let delta2=1
+  if(deltaT<10){
+    delta2=10-deltaT;
+  }
+  delta2=Math.min(delta2,10)
+  console.log(delta,delta2)
 	interv = setInterval(() => {
-		for (let i = 0; i < prt.length; i++) {
-			if (
-				distance(
-					{
-						x: pastPositions[i][count[i]][0],
-						y: pastPositions[i][count[i]][1],
-					},
-					prt[i].position
-				) >
-				prt[i].radius / 4
-			) {
-				pastPositions[i].push([prt[i].position.x, prt[i].position.y]);
-				count[i]++;
-			}
-			if (count[i] > maxTrailLength) {
-				count[i] -= 1;
-				pastPositions[i].shift();
-			}
-		}
-
-		prt = futurePositions[0];
-		setPath();
-		setParticles([...prt]);
-	}, deltaT);
+		for(let i=0;i<delta2;i++){
+      for (let i = 0; i < prt.length; i++) {
+        if (
+          distance(
+            {
+              x: pastPositions[i][count[i]][0],
+              y: pastPositions[i][count[i]][1],
+            },
+            prt[i].position
+          ) >
+          prt[i].radius / 4
+        ) {
+          pastPositions[i].push([prt[i].position.x, prt[i].position.y]);
+          count[i]++;
+        }
+        if (count[i] > maxTrailLength) {
+          count[i] -= 1;
+          pastPositions[i].shift();
+        }
+      }
+  
+      prt = futurePositions[0];
+      setPath();
+    }
+    setParticles([...prt]);
+	},delta );
 }
 function scaledBG() {
 	return (
