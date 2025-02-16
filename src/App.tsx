@@ -73,6 +73,7 @@ function setImportedData(data: any) {
 let preset = [
 	{
 		name: "Planet",
+    scale:0.5,
 		data: () => {
 			return [JSON.parse(JSON.stringify(planet))];
 		},
@@ -85,9 +86,11 @@ let preset = [
 				JSON.parse(JSON.stringify(object)),
 			];
 		},
+    scale:0.5
 	},
 	{
 		name: "5 Bodies",
+    scale:0.5,
 		data: () => {
 			let objs = "0000".split("").map(() => {
 				return JSON.parse(JSON.stringify(object));
@@ -105,7 +108,7 @@ let preset = [
 			objs[3].position.y = 1000;
 			let velz = [1, 1, -1, -1];
 			velz.forEach((o, i) => {
-				objs[i].name = "body " + (i +2);
+				objs[i].name = "body " + (i + 2);
 				objs[i].velocity.x = o;
 				objs[i].mass = 100;
 				let alpha = "abcd"[i] as keyof typeof theme.nord.frost;
@@ -118,6 +121,86 @@ let preset = [
 			planet2.static = true;
 			return [planet2, ...objs];
 		},
+	},
+	{
+		name: "Solar System",
+		data: () => {
+			return [
+				{
+					name: "sun",
+					mass: 3330000,
+					radius: 500,
+					position: { x: 0, y: 0 },
+					velocity: { x: 0, y: 0 },
+					static: true,
+					fixedColor: true,
+					color: "#d3a645",
+					trailColor: "#8fbcbb",
+					futureColor: "#81a1c1",
+				},
+				{
+					name: "mercury",
+					mass: 1,
+					radius: 20,
+					position: { x: 0, y: -554 },
+					velocity: { x: 20, y: 0 },
+					static: false,
+					fixedColor: true,
+					color: "#a6943a",
+					trailColor: "#2e3440",
+					futureColor: "#868446",
+				},
+				{
+					name: "venus",
+					mass: 8,
+					radius: 57,
+					position: { x: 0, y: -1074 },
+					velocity: { x: 15, y: 0 },
+					static: false,
+					fixedColor: true,
+					color: "#ebcb8b",
+					trailColor: "#3b4252",
+					futureColor: "#ebcb8b",
+				},
+        {
+					name: "earth",
+					mass: 10,
+					radius: 60,
+					position: { x: 0, y: -1478 },
+					velocity: { x: 13, y: 0 },
+					static: false,
+					fixedColor: true,
+					color: "#629bd0",
+					trailColor: "#434c5e",
+					futureColor: "#8d9cbf",
+				},
+				{
+					name: "mars",
+					mass: 1,
+					radius: 32,
+					position: { x: 0, y: -2280 },
+					velocity: { x: 10.5, y: 0 },
+					static: false,
+					fixedColor: true,
+					color: "#e05252",
+					trailColor: "#4c566a",
+					futureColor: "#c86f6f",
+				},
+				{
+					name: "jupiter",
+					mass: 3180,
+					radius: 150,
+					position: { x: 0, y: -7624 },
+					velocity: { x: 5.5, y: 0 },
+					static: false,
+					fixedColor: true,
+					color: "#dfd1b3",
+					trailColor: "#434c5e",
+					futureColor: "#bcad8f",
+				},
+			];
+		},
+    scale:0.1
 	},
 ];
 let prt = preset[1].data();
@@ -136,7 +219,10 @@ let futurePositions: any = [];
 let predictionLimit = 5000;
 let maxTrailLength = 1000;
 let deltaT = 10;
+let t1 = new Date().getTime();
+let t2 = new Date().getTime();
 function initPath() {
+  t1=new Date().getTime();
 	futurePositions = [];
 	initialPositions = JSON.parse(JSON.stringify(prt));
 	pastPositions = prt.map((p: any) => {
@@ -158,10 +244,11 @@ function initPath() {
 			paths[j].push([temp[j].position.x, temp[j].position.y]);
 		}
 	}
+  t2=new Date().getTime();
+  console.log("Prediction time:",t2-t1+"ms");  
 }
-let t1 = new Date().getTime();
+
 initPath();
-let t2 = new Date().getTime();
 predictionLimit = Math.floor(
 	((predictionLimit * (deltaT / 250)) / (t2 - t1)) * 1000
 );
@@ -199,13 +286,14 @@ function getColor(velocity: any) {
 let showTrail = true;
 let showFuture = !false;
 let interv: any = null;
-let scale = 0.5;
+let scale = preset[1 ].scale
 let ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 let off = {
 	x: ctr.x - prt[0].position.x * scale,
 	y: ctr.y - prt[0].position.y * scale,
 };
 let change: any = null;
+let velocityScale = 10;
 let bodyId: any = null;
 let mouseDown = false;
 let root = document.getElementById("root");
@@ -214,40 +302,43 @@ function startSimulation(setParticles: any) {
 	if (interv != null) {
 		return;
 	}
-  let delta=Math.max(deltaT, 10)
-  let delta2=1
-  if(deltaT<10){
-    delta2=10-deltaT;
-  }
-  delta2=Math.min(delta2,10)
-  console.log(delta,delta2)
+	let delta = Math.max(deltaT, 10);
+	let delta2 = 1;
+	if (deltaT < 10) {
+		delta2 = 10 - deltaT;
+	}
+	delta2 = Math.min(delta2, 10);
+	console.log(delta, delta2);
 	interv = setInterval(() => {
-		for(let i=0;i<delta2;i++){
-      for (let i = 0; i < prt.length; i++) {
-        if (
-          distance(
-            {
-              x: pastPositions[i][count[i]][0],
-              y: pastPositions[i][count[i]][1],
-            },
-            prt[i].position
-          ) >
-          prt[i].radius / 4
-        ) {
-          pastPositions[i].push([prt[i].position.x, prt[i].position.y]);
-          count[i]++;
-        }
-        if (count[i] > maxTrailLength) {
-          count[i] -= 1;
-          pastPositions[i].shift();
-        }
-      }
-  
-      prt = futurePositions[0];
-      setPath();
-    }
-    setParticles([...prt]);
-	},delta );
+		for (let i = 0; i < delta2; i++) {
+			for (let i = 0; i < prt.length; i++) {
+				if (
+					distance(
+						{
+							x: pastPositions[i][count[i]][0],
+							y: pastPositions[i][count[i]][1],
+						},
+						prt[i].position
+					) >
+					prt[i].radius / 4
+				) {
+					pastPositions[i].push([
+						prt[i].position.x,
+						prt[i].position.y,
+					]);
+					count[i]++;
+				}
+				if (count[i] > maxTrailLength) {
+					count[i] -= 1;
+					pastPositions[i].shift();
+				}
+			}
+
+			prt = futurePositions[0];
+			setPath();
+		}
+		setParticles([...prt]);
+	}, delta);
 }
 function scaledBG() {
 	return (
@@ -293,12 +384,10 @@ function App() {
 	}
 
 	useEffect(() => {
-    window.addEventListener("resize", () => {
-      ctr={x:window.innerWidth/2,y:window.innerHeight/2};
-      setCenter(ctr);
-      
-    
-    });
+		window.addEventListener("resize", () => {
+			ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+			setCenter(ctr);
+		});
 		window.addEventListener("mousemove", (e) => {
 			if (bodyId != null) {
 				let body = document.getElementById("body" + bodyId);
@@ -318,35 +407,41 @@ function App() {
 					}, 1);
 				}
 			}
-      if(bodyId2!==null){
-        let body = document.getElementById("velocity" + bodyId2);
-        if (body != null && mouseDown) {
-          clearInterval(interv);
-          interv = null;
-          body.setAttribute("cx", (e.clientX - off.x).toString());
-          body.setAttribute("cy", (e.clientY - off.y).toString());
-          if (change != null) {
-            clearTimeout(change);
-          }
-          change = setTimeout(() => {
-            prt[bodyId2].velocity.x = ((e.clientX - off.x) / scale - prt[bodyId2].position.x)/250;
-            prt[bodyId2].velocity.y = ((e.clientY - off.y) / scale - prt[bodyId2].position.y)/250;
-            setParticles([...prt]);
-            initPath();
-          }, 1);
-        }
-      }
+			if (bodyId2 !== null) {
+				let body = document.getElementById("velocity" + bodyId2);
+				if (body != null && mouseDown) {
+					clearInterval(interv);
+					interv = null;
+					body.setAttribute("cx", (e.clientX - off.x).toString());
+					body.setAttribute("cy", (e.clientY - off.y).toString());
+					if (change != null) {
+						clearTimeout(change);
+					}
+					change = setTimeout(() => {
+						prt[bodyId2].velocity.x =
+							((e.clientX - off.x) / scale -
+								prt[bodyId2].position.x) /
+							velocityScale;
+						prt[bodyId2].velocity.y =
+							((e.clientY - off.y) / scale -
+								prt[bodyId2].position.y) /
+							velocityScale;
+						setParticles([...prt]);
+						initPath();
+					}, 1);
+				}
+			}
 		});
 		window.addEventListener("mouseup", () => {
 			mouseDown = false;
-			// if (bodyId == null) 
+			// if (bodyId == null)
 			// prt[bodyId].position.x = (e.clientX - off.x) / scale;
 			// prt[bodyId].position.y = (e.clientY - off.y) / scale;
 
 			// setParticles([...prt]);
 			// initPath();
 			bodyId = null;
-      bodyId2=null;
+			bodyId2 = null;
 		});
 		window.addEventListener("keydown", (e) => {
 			let id = e.target as any;
@@ -362,18 +457,17 @@ function App() {
 				setParticles([...prt]);
 			}
 			if (e.key == " ") {
-				if(interv==null)
-          startSimulation(setParticles);
-        else{
-          clearInterval(interv);
-          interv = null;
-          setCenter({
-            x: window.innerWidth / 2,
-            y: window.innerHeight / 2,
-          })
-        }
+				if (interv == null) startSimulation(setParticles);
+				else {
+					clearInterval(interv);
+					interv = null;
+					setCenter({
+						x: window.innerWidth / 2,
+						y: window.innerHeight / 2,
+					});
+				}
 			}
-			
+
 			if (e.key == "i") {
 				initPath();
 				setParticles([...prt]);
@@ -427,37 +521,54 @@ function App() {
 										: getColor(particle.velocity)
 								}
 								stroke={theme.nord.dark.d}
-                strokeWidth={1}
+								strokeWidth={1}
 							/>
-							{interv==null&&<path
-								d={
-									"M " +
-									particle.position.x * scale +
-									" " +
-									particle.position.y * scale +
-									" l " +
-									particle.velocity.x * 250 * scale +
-									" " +
-									particle.velocity.y * 250 * scale
-								}
-								stroke="#505050"
-                strokeOpacity={0.5}
-								strokeWidth={2}></path>}
-              {interv==null&&<circle
-                cx={(particle.position.x+particle.velocity.x * 250) * scale}
-                cy={(particle.position.y+particle.velocity.y * 250) * scale}
-                r={5 }
-                fill="#505050"
-                fillOpacity={0.5}
-                id={"velocity"+index}
-                stroke={theme.nord.light.a}
-                strokeOpacity={0.5}
-
-                onMouseDown={() => {
-                  bodyId2=index;
-                  mouseDown = true;
-                }}
-              />}
+							{interv == null && (
+								<path
+									d={
+										"M " +
+										particle.position.x * scale +
+										" " +
+										particle.position.y * scale +
+										" l " +
+										particle.velocity.x *
+											velocityScale *
+											scale +
+										" " +
+										particle.velocity.y *
+											velocityScale *
+											scale
+									}
+									stroke="#505050"
+									strokeOpacity={0.5}
+									strokeWidth={2}></path>
+							)}
+							{interv == null && (
+								<circle
+									cx={
+										(particle.position.x +
+											particle.velocity.x *
+												velocityScale) *
+										scale
+									}
+									cy={
+										(particle.position.y +
+											particle.velocity.y *
+												velocityScale) *
+										scale
+									}
+									r={5}
+									fill="#505050"
+									fillOpacity={0.5}
+									id={"velocity" + index}
+									stroke={theme.nord.light.a}
+									strokeOpacity={0.5}
+									onMouseDown={() => {
+										bodyId2 = index;
+										mouseDown = true;
+									}}
+								/>
+							)}
 						</g>
 					);
 				})}
@@ -561,10 +672,13 @@ function App() {
 							Scale
 							<Input
 								type="number"
-								value={scale}
-								step={0.01}
+								value={scale * 100}
+								step={0.1}
 								onChange={(e) => {
-									scale = parseFloat(e.target.value);
+									scale = Math.max(
+										0.001,
+										parseFloat(e.target.value) / 100
+									);
 									setCenter({
 										x: window.innerWidth / 2,
 										y: window.innerHeight / 2,
@@ -620,6 +734,7 @@ function App() {
 										prt = JSON.parse(
 											JSON.stringify(p.data())
 										);
+                    scale = p.scale
 										initPath();
 										setParticles([...prt]);
 										setCenter({
@@ -778,7 +893,7 @@ function App() {
 										type="number"
 										value={particle.mass}
 										onChange={(e) => {
-											prt[index].mass = parseInt(
+											prt[index].mass = parseFloat(
 												e.target.value
 											);
 											setParticles([...prt]);
@@ -792,7 +907,7 @@ function App() {
 										type="number"
 										value={particle.radius}
 										onChange={(e) => {
-											prt[index].radius = parseInt(
+											prt[index].radius = parseFloat(
 												e.target.value
 											);
 											setParticles([...prt]);
@@ -904,12 +1019,11 @@ function App() {
 										type="color"
 										className="w-1/2"
 										value={particle.color}
-                    
 										onChange={(e) => {
-                      console.log(e.currentTarget.value)
-                      prt[index].color = e.currentTarget.value;
-                      setParticles([...prt]);
-                      
+											console.log(e.currentTarget.value);
+											prt[index].color =
+												e.currentTarget.value;
+											setParticles([...prt]);
 										}}
 									/>
 								</p>
@@ -920,8 +1034,9 @@ function App() {
 										className="w-1/2"
 										value={particle.trailColor}
 										onChange={(e) => {
-											prt[index].trailColor = e.currentTarget.value;
-                      setParticles([...prt]);
+											prt[index].trailColor =
+												e.currentTarget.value;
+											setParticles([...prt]);
 										}}
 									/>
 								</p>
@@ -932,16 +1047,74 @@ function App() {
 										className="w-1/2"
 										value={particle.futureColor}
 										onChange={(e) => {
-											prt[index].futureColor = e.currentTarget.value;
-                      setParticles([...prt]);
+											prt[index].futureColor =
+												e.currentTarget.value;
+											setParticles([...prt]);
 										}}
 									/>
 								</p>
 							</CardContent>
-							<CardFooter className="flex justify-end">
+							<CardFooter className="flex justify-between">
 								<Button
 									variant="outline"
-									className=" border-[#bf616a]"
+									className=" "
+									onClick={() => {
+										let ref = {
+											x: prt[index].position.x,
+											y: prt[index].position.y,
+										};
+										let refRad = prt[index].radius;
+										let pos = {
+											x:
+												ref.x +
+												(Math.random() + 5) *
+													refRad *
+													(Math.random() < 0.5
+														? 1
+														: -1),
+											y:
+												ref.y +
+												(Math.random() + 5) *
+													refRad *
+													(Math.random() < 0.5
+														? 1
+														: -1),
+										};
+										let vel = {
+											x: 0, //Math.random() * 0.2 - 0.1,
+											y: 0, // Math.random() * 0.2 - 0.1,
+										};
+										let rand = Math.random();
+										let alpha = "abcd"[
+											Math.floor(rand * 4)
+										] as keyof typeof theme.nord.dark;
+										let beta = "abcde"[
+											Math.floor(rand * 5)
+										] as keyof typeof theme.nord.aurora;
+										prt.push({
+											name: "body " + (prt.length + 1),
+											mass: prt[index].mass,
+											radius: prt[index].radius,
+											position: { x: pos.x, y: pos.y },
+											velocity: { x: vel.x, y: vel.y },
+											static: false,
+											fixedColor: true,
+											color: theme.nord.aurora[beta],
+											trailColor: theme.nord.dark[alpha],
+											futureColor:
+												theme.nord.aurora[beta],
+										});
+										pastPositions.push([[pos.x, pos.y]]);
+										count.push(0);
+										paths.push([]);
+										setParticles([...prt]);
+										initPath();
+									}}>
+									Duplicate
+								</Button>
+								<Button
+									variant="outline"
+									className=" border-[#bf616a80]"
 									onClick={() => {
 										prt.splice(index, 1);
 										pastPositions.splice(index, 1);
