@@ -38,7 +38,7 @@ import {
 	AlertDialogTrigger,
 } from "@radix-ui/react-alert-dialog";
 import { Textarea } from "./components/ui/textarea";
-import { Button } from "./components/ui/button";
+
 let initPath = getVars.initPath();
 let setCenter = getVars.setCenter();
 const separator = (

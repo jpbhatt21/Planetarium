@@ -32,18 +32,18 @@ function getColor(velocity: any) {
     return `rgb(${r},${g},${b})`;
 }
 
-let planet = {
-	name: "planet",
-	mass: 10000,
-	radius: 50,
-	position: { x: 500, y: 500 },
-	velocity: { x: 0.1, y: 0.1 },
-	static: false,
-	fixedColor: true,
-	color: theme.nord.frost.d,
-	trailColor: theme.nord.frost.a,
-	futureColor: theme.nord.frost.c,
-};
+// let planet = {
+// 	name: "planet",
+// 	mass: 10000,
+// 	radius: 50,
+// 	position: { x: 500, y: 500 },
+// 	velocity: { x: 0.1, y: 0.1 },
+// 	static: false,
+// 	fixedColor: true,
+// 	color: theme.nord.frost.d,
+// 	trailColor: theme.nord.frost.a,
+// 	futureColor: theme.nord.frost.c,
+// };
 
 let initPath=getVars.initPath()
 let getSVGPath=getVars.getSVGPath
