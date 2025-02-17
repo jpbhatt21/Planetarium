@@ -6,6 +6,7 @@ import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 
 import AppSidebar from "./Sidebar";
 import { getVars, setVars } from "./vars";
+import { Button } from "./components/ui/button";
 let anchor = 0;
 // let object = {
 // 	name: "body 2",
@@ -20,16 +21,16 @@ let anchor = 0;
 // 	futureColor: theme.nord.aurora.b,
 // };
 function getColor(velocity: any) {
-    let maxV = 5;
-    let min = { r: 234, g: 203, b: 139 };
-    let max = { r: 191, g: 97, b: 106 };
-    //rgb(191, 97, 106) red
-    let vel =
-        Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y) / maxV;
-    let r = min.r + Math.floor(vel * (max.r - min.r));
-    let g = min.g + Math.floor(vel * (max.g - min.g));
-    let b = min.b + Math.floor(vel * (max.b - min.b));
-    return `rgb(${r},${g},${b})`;
+	let maxV = 5;
+	let min = { r: 234, g: 203, b: 139 };
+	let max = { r: 191, g: 97, b: 106 };
+	//rgb(191, 97, 106) red
+	let vel =
+		Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y) / maxV;
+	let r = min.r + Math.floor(vel * (max.r - min.r));
+	let g = min.g + Math.floor(vel * (max.g - min.g));
+	let b = min.b + Math.floor(vel * (max.b - min.b));
+	return `rgb(${r},${g},${b})`;
 }
 
 // let planet = {
@@ -45,8 +46,8 @@ function getColor(velocity: any) {
 // 	futureColor: theme.nord.frost.c,
 // };
 
-let initPath=getVars.initPath()
-let getSVGPath=getVars.getSVGPath
+let initPath = getVars.initPath();
+let getSVGPath = getVars.getSVGPath;
 let bodies = getVars.bodies();
 let showTrail = true;
 let showFuture = !false;
@@ -54,30 +55,32 @@ let interv: any = null;
 let scale = getVars.scale();
 let ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 let off = {
-    x: ctr.x - bodies[0].position.x * scale,
-    y: ctr.y - bodies[0].position.y * scale,
+	x: ctr.x - bodies[0].position.x * scale,
+	y: ctr.y - bodies[0].position.y * scale,
 };
 let change: any = null;
 let velocityScale = 10;
 let bodyId: any = null;
 let mouseDown = false;
 let bodyId2: any = null;
-function setInterv(x:any){
-    interv=x;
+function setInterv(x: any) {
+	interv = x;
 }
 setVars.setInterv(setInterv);
 function App() {
 	const [particles, setParticles] = useState([...bodies]);
+	const [selected, setSelected] = useState(-1);
 
 	const [center, setCenter] = useState({
 		x: window.innerWidth / 2,
 		y: window.innerHeight / 2,
 	});
+	const [mousePos, setMousePos] = useState(center);
 	const [offset, setOffset] = useState({
 		x: center.x - bodies[0].position.x * scale,
 		y: center.y - bodies[0].position.y * scale,
 	});
-	scale=getVars.scale()
+	scale = getVars.scale();
 	if (
 		(offset.x != center.x - particles[anchor].position.x * scale ||
 			offset.y != center.y - particles[anchor].position.y * scale) &&
@@ -89,21 +92,21 @@ function App() {
 		};
 		setOffset(off);
 	}
-  
-  bodies = getVars.bodies();
-  setVars.interv(interv);
- let temp=getVars.anchor()
- if(temp!=anchor){
-  anchor=temp;
-  off = {
-    x: center.x - particles[anchor].position.x * scale,
-    y: center.y - particles[anchor].position.y * scale,
-  };
-  setOffset(off);
- }
+
+	bodies = getVars.bodies();
+	setVars.interv(interv);
+	let temp = getVars.anchor();
+	if (temp != anchor) {
+		anchor = temp;
+		off = {
+			x: center.x - particles[anchor].position.x * scale,
+			y: center.y - particles[anchor].position.y * scale,
+		};
+		setOffset(off);
+	}
 	useEffect(() => {
-    setVars.setParticles(setParticles);
-    setVars.setCenter(setCenter);
+		setVars.setParticles(setParticles);
+		setVars.setCenter(setCenter);
 		function move(e: any) {
 			if (bodyId != null) {
 				let body = document.getElementById("body" + bodyId);
@@ -118,7 +121,7 @@ function App() {
 					change = setTimeout(() => {
 						bodies[bodyId].position.x = (e.clientX - off.x) / scale;
 						bodies[bodyId].position.y = (e.clientY - off.y) / scale;
-            setVars.bodies([...bodies]);
+						setVars.bodies([...bodies]);
 						setParticles([...bodies]);
 						initPath();
 					}, 1);
@@ -143,7 +146,7 @@ function App() {
 							((e.clientY - off.y) / scale -
 								bodies[bodyId2].position.y) /
 							velocityScale;
-              setVars.bodies([...bodies]);
+						setVars.bodies([...bodies]);
 						setParticles([...bodies]);
 						initPath();
 					}, 1);
@@ -170,10 +173,12 @@ function App() {
 		window.addEventListener("wheel", (e) => {
 			let target = e.target as HTMLElement;
 			if (target.id == "svg") {
-        console.log(scale)
-				scale -= e.deltaY / (scale>1?1000:scale>0.1?10000:100000);
-        if(scale<=0) scale=0.01;
-        setVars.scale(scale);
+				console.log(scale);
+				scale -=
+					e.deltaY /
+					(scale > 1 ? 1000 : scale > 0.1 ? 10000 : 100000);
+				if (scale <= 0) scale = 0.01;
+				setVars.scale(scale);
 				let ele = document.getElementById("scale") as HTMLInputElement;
 				if (ele) ele.value = (scale * 100).toFixed(2);
 				off = {
@@ -187,15 +192,16 @@ function App() {
 					change = setTimeout(() => {
 						bodies[parseInt(target.id.replace("body", ""))].mass -=
 							e.deltaY;
-            setVars.bodies([...bodies]);
+						setVars.bodies([...bodies]);
 						setParticles([...bodies]);
 						initPath();
 					}, 10);
 				} else {
 					change = setTimeout(() => {
-						bodies[parseInt(target.id.replace("body", ""))].radius -=
-							e.deltaY / 20;
-            setVars.bodies([...bodies]);
+						bodies[
+							parseInt(target.id.replace("body", ""))
+						].radius -= e.deltaY / 20;
+						setVars.bodies([...bodies]);
 						setParticles([...bodies]);
 						initPath();
 					}, 10);
@@ -217,11 +223,11 @@ function App() {
 				setParticles([...bodies]);
 			}
 			if (e.key == " ") {
-				if (interv == null) interv=getVars.startSimulation();
+				if (interv == null) interv = getVars.startSimulation();
 				else {
 					clearInterval(interv);
 					interv = null;
-          setVars.interv(interv);
+					setVars.interv(interv);
 					setCenter({
 						x: window.innerWidth / 2,
 						y: window.innerHeight / 2,
@@ -234,10 +240,10 @@ function App() {
 				setParticles([...bodies]);
 			}
 		});
-    setCenter(ctr);
+		setCenter(ctr);
 	}, []);
 	const [sidebarOpen, setSidebarOpen] = useState(true);
-
+	let time = getVars.time();
 	return (
 		<SidebarProvider
 			open={sidebarOpen}
@@ -257,7 +263,6 @@ function App() {
 					backgroundColor: "#09090b",
 					backgroundImage: `${getVars.scaledBG()()}`,
 					backgroundPosition: `${off.x}px ${off.y}px`,
-					
 				}}>
 				<svg
 					id="svg"
@@ -277,23 +282,39 @@ function App() {
 							);
 						})}
 					{showTrail &&
-						getVars.pastPositions().map((pastPosition: any, index: any) => {
-							return (
-								<path
-									d={getSVGPath(pastPosition, { x: 0, y: 0 })}
-									fill="none"
-									stroke={bodies[index].trailColor}
-								/>
-							);
-						})}
+						getVars
+							.pastPositions()
+							.map((pastPosition: any, index: any) => {
+								return (
+									<path
+										d={getSVGPath(pastPosition, {
+											x: 0,
+											y: 0,
+										})}
+										fill="none"
+										stroke={bodies[index].trailColor}
+									/>
+								);
+							})}
 					{particles.map((particle, index) => {
 						return (
 							<g>
 								<circle
+									onMouseEnter={(e) => {
+										setSelected(index);
+										setMousePos({
+											x: e.clientX,
+											y: e.clientY,
+										});
+									}}
+									onMouseLeave={() => {
+										setSelected(-1);
+									}}
 									id={"body" + index}
 									style={{
 										transition:
-											interv !== null && getVars.speed() < 0
+											interv !== null &&
+											getVars.speed() < 0
 												? "all " +
 												  10 * (1 - getVars.speed()) +
 												  "ms"
@@ -311,14 +332,16 @@ function App() {
 									}}
 									onClick={() => {
 										anchor = index;
-                    setVars.anchor(anchor);
+										setVars.anchor(anchor);
 										off = {
 											x:
 												center.x -
-												bodies[anchor].position.x * scale,
+												bodies[anchor].position.x *
+													scale,
 											y:
 												center.y -
-												bodies[anchor].position.y * scale,
+												bodies[anchor].position.y *
+													scale,
 										};
 
 										setOffset(off);
@@ -329,8 +352,8 @@ function App() {
 									r={particle.radius * scale}
 									fill={
 										particle.fixedColor
-											? particle.color:
-											 getColor(particle.velocity)
+											? particle.color
+											: getColor(particle.velocity)
 									}
 									stroke={theme.nord.dark.d}
 									strokeWidth={1}
@@ -386,14 +409,108 @@ function App() {
 					})}
 				</svg>
 			</div>
-          
-			<div className="fixed duration-300 top-2"
-      style={{
-        left: sidebarOpen ? "20rem" :"4rem",
-      }}>
-        <SidebarTrigger className=" "
-      />
-      </div>
+
+			<div
+				className="fixed duration-300 top-2"
+				style={{
+					left: sidebarOpen ? "20rem" : "4rem",
+				}}>
+				<SidebarTrigger id="sidebarTrig" className=" " />
+			</div>
+			<div className="flex flex-col items-end gap-2 absolute bottom-2 right-2">
+				<label className="w-60 text-sm text-end">
+					{time < 24
+						? time + " hours"
+						: time < 168
+						? (time / 24).toFixed(1) + " days"
+						: time < 720
+						? (time / 168).toFixed(1) + " weeks"
+						: time < 8640
+						? (time / 720).toFixed(1) + " months"
+						: (time / 8640).toFixed(1) + " years"}{" "}
+					since initialization
+				</label>
+				</div>
+			<div className="flex flex-col items-end gap-2 absolute top-2 right-2">
+				
+				<Button
+					variant="outline"
+					className=" w-20"
+					style={{
+						borderColor: interv == null ? "#a3be8c80" : "#bf616a80",
+					}}
+					onClick={(e) => {
+						if (interv == null) getVars.startSimulation();
+						else {
+							clearInterval(interv);
+							interv = null;
+							setVars.interv(interv);
+							setCenter({
+								x: window.innerWidth / 2,
+								y: window.innerHeight / 2,
+							});
+						}
+						e.currentTarget.blur();
+					}}>
+					{interv == null ? "Play" : "Pause"}
+				</Button>
+				<Button
+					variant="outline"
+					className=" w-20 "
+					style={{
+						borderColor: showTrail ? "#a3be8c80" : "#bf616a80",
+					}}
+					onClick={(e) => {
+						showTrail = !showTrail;
+						setCenter({
+							x: window.innerWidth / 2,
+							y: window.innerHeight / 2,
+						});
+						e.currentTarget.blur();
+					}}>
+					Trail
+				</Button>
+				<Button
+					variant="outline"
+					className=" w-20 "
+					style={{
+						borderColor: showFuture ? "#a3be8c80" : "#bf616a80",
+					}}
+					onClick={(e) => {
+						showFuture = !showFuture;
+						setCenter({
+							x: window.innerWidth / 2,
+							y: window.innerHeight / 2,
+						});
+						e.currentTarget.blur();
+					}}>
+					Forecast
+				</Button>
+			</div>
+			<div>halo</div>
+			<div
+				className="flex fixed bg-background/50 duration-300 text-accent-foreground border p-2 rounded-md flex-col justify-between"
+				style={{
+					top: mousePos.y,
+					left: mousePos.x,
+					opacity: selected < 0 ? 0 : 1,
+					transitionProperty: "opacity,transform",
+					transform: selected < 0 ? "scale(0)" : "scale(1)",
+					transformOrigin: "top left",
+				}}>
+				
+					
+						<div className="w-full text-center mb-1">{selected>=0?particles[selected].name:"---"}</div>
+						<div>Mass: {selected>=0?particles[selected].mass.toFixed(2):"---"}</div>
+						<div>Radius: {selected>=0?particles[selected].radius.toFixed(2):"---"}</div>
+						<div>
+							Position: {selected>=0?particles[selected].position.x.toFixed(2):"---"} , {selected>=0?particles[selected].position.y.toFixed(2):"---"}
+						</div>
+						<div>
+							Velocity: {selected>=0?particles[selected].velocity.x.toFixed(2):"---"} , {selected>=0?particles[selected].velocity.y.toFixed(2):"---"}
+						</div>
+					
+			</div>
 		</SidebarProvider>
 	);
 }

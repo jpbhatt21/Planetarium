@@ -13,7 +13,7 @@ let object = {
     trailColor: theme.nord.dark.b,
     futureColor: theme.nord.aurora.b,
 };
-
+let time=0;
 let planet = {
     name: "planet",
     mass: 10000,
@@ -180,6 +180,7 @@ let maxTrailLength = 1000;
 let t1 = new Date().getTime();
 let t2 = new Date().getTime();
 function initPath() {
+	
     t1 = new Date().getTime();
     futurePositions = [];
     // initialPositions = JSON.parse(JSON.stringify(bodies));
@@ -270,6 +271,7 @@ function startSimulation() {
             bodies = futurePositions[0];
             setPath();
         }
+		time+=delta2;
         setParticles([...bodies]);
     }, delta);
     setInterv(interv);
@@ -284,30 +286,31 @@ function scaledBG() {
         "' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%231b1b1b' fill-opacity='1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
     );
 }
-
+export const version = "1.1.0";
 export function setImportedData(data: any) {
-	// if (data.version != version) {
-	// 	alert("Version mismatch");
-	// 	return;
-	// }
-	predictionLimit = data.predictionLimit;
-	maxTrailLength = data.maxTrailLength;
-	setVars.speed(data.deltaT);
+	if (data.version != version) {
+		alert("Version mismatch");
+		return;
+	}
+	// predictionLimit = data.forecastLimit;
+	// maxTrailLength = data.maxTrailLength;
+	if(interv!=null){
+		clearInterval(interv);
+		interv=null;
+		setInterv(interv);
+	}
+	setVars.speed(data.speed);
 	scale = data.scale;
 	let ele = document.getElementById("scale") as HTMLInputElement;
 	if (ele) ele.value = (scale * 100).toString();
 	set.G(data.G);
 	set.collisionEnergyLoss(data.collisionEnergyLoss);
-	bodies = data.particles;
+	bodies = data.bodies;
 	let ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    setCenter(ctr);
-    setParticles([...bodies]);
-    anchor = 0;
-	// setF{
-	// 	x: ctr.x - bodies[0].position.x * scale,
-	// 	y: ctr.y - bodies[0].position.y * scale,
-	// };
+    anchor = data.anchor;
 	initPath();
+    setParticles([...bodies]);
+    setCenter(ctr);
 }
 
 let setParticles:any=null
@@ -332,7 +335,8 @@ export let getVars={
     maxTrailLength:()=>maxTrailLength,
     anchor:()=>anchor,
     count:()=>count,
-    presets:()=>preset
+    presets:()=>preset,
+	time:()=>time
 }
 export let setVars={
     speed:(s:number)=>speed=s,
@@ -348,6 +352,7 @@ export let setVars={
     anchor:(s:number)=>anchor=s,
     count:(s:any)=>count=s,
     paths:(s:any)=>paths=s,
-    pastPositions:(s:any)=>pastPositions=s
+    pastPositions:(s:any)=>pastPositions=s,
+	time:(s:number)=>time=s
 
 }
