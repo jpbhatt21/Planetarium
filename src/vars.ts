@@ -26,145 +26,44 @@ let planet = {
     trailColor: theme.nord.frost.a,
     futureColor: theme.nord.frost.c,
 };
+let interv: any = null;
+let scale = 1
+export const version = "1.1.0";
 export let preset = [
 	{
-		name: "Planet",
-		scale: 0.5,
-		data: () => {
-			return [JSON.parse(JSON.stringify(planet))];
-		},
+		name: "Star",
+		data: {"version":"1.1.0","speed":0,"G":0.0667,"collisionEnergyLoss":0.01,"scale":0.5,"anchor":1,"bodies":[{"name":"planet","mass":10000,"radius":50,"position":{"x":500,"y":500},"velocity":{"x":0.1,"y":0.1},"static":false,"fixedColor":true,"color":"#5e81ac","trailColor":"#8fbcbb","futureColor":"#81a1c1"}]},
 	},
 	{
-		name: "Planet with Moon",
-		data: () => {
-			return [
-				JSON.parse(JSON.stringify(planet)),
-				JSON.parse(JSON.stringify(object)),
-			];
-		},
-		scale: 0.5,
+		name: "Star & Planet",
+		data: {"version":"1.1.0","speed":0,"G":0.0667,"collisionEnergyLoss":0.01,"scale":0.5,"anchor":1,"bodies":[{"name":"planet","mass":10000,"radius":50,"position":{"x":500,"y":500},"velocity":{"x":0.1,"y":0.1},"static":false,"fixedColor":true,"color":"#5e81ac","trailColor":"#8fbcbb","futureColor":"#81a1c1"},{"name":"body 2","mass":100,"radius":10,"position":{"x":100,"y":100},"velocity":{"x":1,"y":0},"static":false,"fixedColor":false,"color":"#a3be8c","trailColor":"#3b4252","futureColor":"#d08770"}]},
+	
+	},
+	{
+		name: "Star-Planet-Moon",
+		data:{"version":"1.1.0","speed":0,"G":0.0667,"collisionEnergyLoss":0.01,"scale":1,"anchor":1,"bodies":[{"name":"planet","mass":10000,"radius":50,"position":{"x":500,"y":500},"velocity":{"x":0.1,"y":0.1},"static":true,"fixedColor":true,"color":"#5e81ac","trailColor":"#8fbcbb","futureColor":"#81a1c1"},{"name":"body 2","mass":1000,"radius":10,"position":{"x":500,"y":250},"velocity":{"x":1.65,"y":0},"static":false,"fixedColor":false,"color":"#a3be8c","trailColor":"#3b4252","futureColor":"#d08770"},{"name":"body 3","mass":100,"radius":2,"position":{"x":500,"y":220},"velocity":{"x":0,"y":0},"static":false,"fixedColor":true,"color":"#bf616a","trailColor":"#2e3440","futureColor":"#bf616a"}]}
+	},
+	{
+		name: "Planetary System",
+		data:{"version":"1.1.0","speed":0,"G":0.0667,"collisionEnergyLoss":0.01,"scale":0.1,"anchor":1,"bodies":[{"name":"sun","mass":3330000,"radius":500,"position":{"x":0,"y":0},"velocity":{"x":0,"y":0},"static":true,"fixedColor":true,"color":"#d3a645","trailColor":"#8fbcbb","futureColor":"#81a1c1"},{"name":"mercury","mass":1,"radius":20,"position":{"x":0,"y":-554},"velocity":{"x":20,"y":0},"static":false,"fixedColor":true,"color":"#a6943a","trailColor":"#2e3440","futureColor":"#868446"},{"name":"venus","mass":8,"radius":57,"position":{"x":0,"y":-1074},"velocity":{"x":15,"y":0},"static":false,"fixedColor":true,"color":"#ebcb8b","trailColor":"#3b4252","futureColor":"#ebcb8b"},{"name":"earth","mass":10,"radius":60,"position":{"x":0,"y":-1478},"velocity":{"x":13,"y":0},"static":false,"fixedColor":true,"color":"#629bd0","trailColor":"#434c5e","futureColor":"#8d9cbf"},{"name":"mars","mass":1,"radius":32,"position":{"x":0,"y":-2280},"velocity":{"x":10.5,"y":0},"static":false,"fixedColor":true,"color":"#e05252","trailColor":"#4c566a","futureColor":"#c86f6f"},{"name":"jupiter","mass":3180,"radius":150,"position":{"x":0,"y":-7624},"velocity":{"x":5.5,"y":0},"static":false,"fixedColor":true,"color":"#dfd1b3","trailColor":"#434c5e","futureColor":"#bcad8f"}]},
+		
 	},
 	{
 		name: "5 Bodies",
-		scale: 0.5,
-		data: () => {
-			let objs = "0000".split("").map(() => {
-				return JSON.parse(JSON.stringify(object));
-			});
-			objs[0].position.x = 0;
-			objs[0].position.y = 0;
-
-			objs[1].position.x = 1000;
-			objs[1].position.y = 0;
-
-			objs[2].position.x = 0;
-			objs[2].position.y = 1000;
-
-			objs[3].position.x = 1000;
-			objs[3].position.y = 1000;
-			let velz = [1, 1, -1, -1];
-			velz.forEach((o, i) => {
-				objs[i].name = "body " + (i + 2);
-				objs[i].velocity.x = o;
-				objs[i].mass = 100;
-				let alpha = "abcd"[i] as keyof typeof theme.nord.frost;
-				objs[i].trailColor = theme.nord.dark[alpha];
-				objs[i].color = theme.nord.aurora[alpha];
-				objs[i].futureColor = theme.nord.aurora[alpha];
-				objs[i].fixedColor = true;
-			});
-			let planet2 = JSON.parse(JSON.stringify(planet));
-			planet2.static = true;
-			return [planet2, ...objs];
-		},
+		
+		data:{"version":"1.1.0","speed":0,"G":0.0667,"collisionEnergyLoss":0.01,"scale":0.5,"anchor":1,"bodies":[{"name":"planet","mass":10000,"radius":50,"position":{"x":500,"y":500},"velocity":{"x":0.1,"y":0.1},"static":true,"fixedColor":true,"color":"#5e81ac","trailColor":"#8fbcbb","futureColor":"#81a1c1"},{"name":"body 2","mass":100,"radius":10,"position":{"x":0,"y":0},"velocity":{"x":1,"y":0},"static":false,"fixedColor":true,"color":"#bf616a","trailColor":"#2e3440","futureColor":"#bf616a"},{"name":"body 3","mass":100,"radius":10,"position":{"x":1000,"y":0},"velocity":{"x":1,"y":0},"static":false,"fixedColor":true,"color":"#d08770","trailColor":"#3b4252","futureColor":"#d08770"},{"name":"body 4","mass":100,"radius":10,"position":{"x":0,"y":1000},"velocity":{"x":-1,"y":0},"static":false,"fixedColor":true,"color":"#ebcb8b","trailColor":"#434c5e","futureColor":"#ebcb8b"},{"name":"body 5","mass":100,"radius":10,"position":{"x":1000,"y":1000},"velocity":{"x":-1,"y":0},"static":false,"fixedColor":true,"color":"#a3be8c","trailColor":"#4c566a","futureColor":"#a3be8c"}]}
 	},
-	{
-		name: "Solar System",
-		data: () => {
-			return [
-				{
-					name: "sun",
-					mass: 3330000,
-					radius: 500,
-					position: { x: 0, y: 0 },
-					velocity: { x: 0, y: 0 },
-					static: true,
-					fixedColor: true,
-					color: "#d3a645",
-					trailColor: "#8fbcbb",
-					futureColor: "#81a1c1",
-				},
-				{
-					name: "mercury",
-					mass: 1,
-					radius: 20,
-					position: { x: 0, y: -554 },
-					velocity: { x: 20, y: 0 },
-					static: false,
-					fixedColor: true,
-					color: "#a6943a",
-					trailColor: "#2e3440",
-					futureColor: "#868446",
-				},
-				{
-					name: "venus",
-					mass: 8,
-					radius: 57,
-					position: { x: 0, y: -1074 },
-					velocity: { x: 15, y: 0 },
-					static: false,
-					fixedColor: true,
-					color: "#ebcb8b",
-					trailColor: "#3b4252",
-					futureColor: "#ebcb8b",
-				},
-				{
-					name: "earth",
-					mass: 10,
-					radius: 60,
-					position: { x: 0, y: -1478 },
-					velocity: { x: 13, y: 0 },
-					static: false,
-					fixedColor: true,
-					color: "#629bd0",
-					trailColor: "#434c5e",
-					futureColor: "#8d9cbf",
-				},
-				{
-					name: "mars",
-					mass: 1,
-					radius: 32,
-					position: { x: 0, y: -2280 },
-					velocity: { x: 10.5, y: 0 },
-					static: false,
-					fixedColor: true,
-					color: "#e05252",
-					trailColor: "#4c566a",
-					futureColor: "#c86f6f",
-				},
-				{
-					name: "jupiter",
-					mass: 3180,
-					radius: 150,
-					position: { x: 0, y: -7624 },
-					velocity: { x: 5.5, y: 0 },
-					static: false,
-					fixedColor: true,
-					color: "#dfd1b3",
-					trailColor: "#434c5e",
-					futureColor: "#bcad8f",
-				},
-			];
-		},
-		scale: 0.1,
-	},
+	
 ];
 let speed = 0;
-let bodies = preset[1].data();
+let bodies=[planet,object]
 let pastPositions: any = bodies.map((p: any) => {
 	return [[p.position.x, p.position.y]];
 });
-
+let anchor=0;
+let setParticles:any=()=>null
+let setCenter:any=()=>null
+let setInterv:any=()=>null
 // let initialPositions = JSON.parse(JSON.stringify(bodies));
 let count = bodies.map(() => {
     return 0;
@@ -206,7 +105,7 @@ function initPath() {
     t2 = new Date().getTime();
     console.log("Prediction time:", t2 - t1 + "ms");
 }
-
+setImportedData(preset[1].data)
 initPath();
 predictionLimit = Math.floor((predictionLimit / (t2 - t1)) * 50);
 initPath();
@@ -228,8 +127,7 @@ function getSVGPath(path: any, offset: any) {
     return `M${pth.join("L")}`;
 }
 
-let interv: any = null;
-let scale = preset[1].scale;
+
 function startSimulation() {
   let speed=getVars.speed();
     if (interv != null) {
@@ -286,7 +184,7 @@ function scaledBG() {
         "' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%231b1b1b' fill-opacity='1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
     );
 }
-export const version = "1.1.0";
+
 export function setImportedData(data: any) {
 	if (data.version != version) {
 		alert("Version mismatch");
@@ -299,7 +197,7 @@ export function setImportedData(data: any) {
 		interv=null;
 		setInterv(interv);
 	}
-	setVars.speed(data.speed);
+	speed = data.speed;
 	scale = data.scale;
 	let ele = document.getElementById("scale") as HTMLInputElement;
 	if (ele) ele.value = (scale * 100).toString();
@@ -313,10 +211,7 @@ export function setImportedData(data: any) {
     setCenter(ctr);
 }
 
-let setParticles:any=null
-let setCenter:any=null
-let setInterv:any=null
-let anchor=0;
+
 export let getVars={
     speed:()=>speed,
     interv:()=>interv,
@@ -353,6 +248,7 @@ export let setVars={
     count:(s:any)=>count=s,
     paths:(s:any)=>paths=s,
     pastPositions:(s:any)=>pastPositions=s,
-	time:(s:number)=>time=s
+	time:(s:number)=>time=s,
+	
 
 }

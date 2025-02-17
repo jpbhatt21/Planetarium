@@ -66,6 +66,8 @@ let bodyId2: any = null;
 function setInterv(x: any) {
 	interv = x;
 }
+let shiftAnchor= false;
+let mouseAnchor = {x:0,y:0};
 setVars.setInterv(setInterv);
 function App() {
 	const [particles, setParticles] = useState([...bodies]);
@@ -81,14 +83,14 @@ function App() {
 		y: center.y - bodies[0].position.y * scale,
 	});
 	scale = getVars.scale();
-	if (
-		(offset.x != center.x - particles[anchor].position.x * scale ||
-			offset.y != center.y - particles[anchor].position.y * scale) &&
+	if (anchor>0&&
+		(offset.x != center.x - particles[anchor-1].position.x * scale ||
+			offset.y != center.y - particles[anchor-1].position.y * scale) &&
 		!mouseDown
 	) {
 		off = {
-			x: center.x - particles[anchor].position.x * scale,
-			y: center.y - particles[anchor].position.y * scale,
+			x: center.x - particles[anchor-1].position.x * scale,
+			y: center.y - particles[anchor-1].position.y * scale,
 		};
 		setOffset(off);
 	}
@@ -98,9 +100,20 @@ function App() {
 	let temp = getVars.anchor();
 	if (temp != anchor) {
 		anchor = temp;
+		if(anchor>0){
+			off = {
+				x: center.x - particles[anchor-1].position.x * scale,
+				y: center.y - particles[anchor-1].position.y * scale,
+			};
+			setOffset(off);
+		}
+	}
+	temp = getVars.scale();
+	if (temp != scale) {
+		scale = temp;
 		off = {
-			x: center.x - particles[anchor].position.x * scale,
-			y: center.y - particles[anchor].position.y * scale,
+			x: center.x - particles[0].position.x * scale,
+			y: center.y - particles[0].position.y * scale,
 		};
 		setOffset(off);
 	}
@@ -152,10 +165,32 @@ function App() {
 					}, 1);
 				}
 			}
+			if(shiftAnchor&&anchor==0){
+				console.log("shift");
+				let dx = e.clientX - mouseAnchor.x;
+				let dy = e.clientY - mouseAnchor.y;
+				off.x+=dx;
+				off.y+=dy;
+				
+				setOffset((prev)=>{
+					return {x:prev.x+dx,y:prev.y+dy}
+				});
+				mouseAnchor = {x:e.clientX,y:e.clientY};
+			}
 		}
 		window.addEventListener("resize", () => {
 			ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 			setCenter(ctr);
+		});
+		window.addEventListener("mousedown", (e) => {
+			let target = e.target as HTMLElement;
+			if (target.id == "sidebarTrig") {
+				return;
+			}
+			if (target.id == "svg") {
+				shiftAnchor = true;
+				mouseAnchor = {x:e.clientX,y:e.clientY};
+			}
 		});
 		window.addEventListener("mousemove", move);
 		window.addEventListener("touchmove", move);
@@ -168,6 +203,8 @@ function App() {
 			mouseDown = false;
 			bodyId = null;
 			bodyId2 = null;
+			shiftAnchor = false;
+			setOffset(off);
 		});
 
 		window.addEventListener("wheel", (e) => {
@@ -262,14 +299,19 @@ function App() {
 				style={{
 					backgroundColor: "#09090b",
 					backgroundImage: `${getVars.scaledBG()()}`,
-					backgroundPosition: `${off.x}px ${off.y}px`,
+					backgroundPosition: `${offset.x}px ${offset.y}px`,
 				}}>
 				<svg
 					id="svg"
+					
 					className=" fadein absolute w-full h-full"
 					viewBox={`${-offset.x} ${-offset.y} ${window.innerWidth} ${
 						window.innerHeight
-					}`}>
+					}`}
+					style={{
+						cursor:  anchor==0?shiftAnchor?"grabbing":"grab":"default",
+					}}
+					>
 					{showFuture &&
 						getVars.paths().map((path: any, index: any) => {
 							return (
@@ -319,6 +361,7 @@ function App() {
 												  10 * (1 - getVars.speed()) +
 												  "ms"
 												: "",
+												cursor: interv==null?mouseDown?"grabbing":"grab":"pointer",
 									}}
 									onMouseDown={() => {
 										if (interv != null) return;
@@ -331,16 +374,16 @@ function App() {
 										mouseDown = true;
 									}}
 									onClick={() => {
-										anchor = index;
+										anchor = index+1;
 										setVars.anchor(anchor);
 										off = {
 											x:
 												center.x -
-												bodies[anchor].position.x *
+												bodies[anchor-1].position.x *
 													scale,
 											y:
 												center.y -
-												bodies[anchor].position.y *
+												bodies[anchor-1].position.y *
 													scale,
 										};
 
@@ -398,6 +441,9 @@ function App() {
 										id={"velocity" + index}
 										stroke={theme.nord.light.a}
 										strokeOpacity={0.5}
+										style={{
+											cursor: interv==null?mouseDown?"grabbing":"grab":"pointer",
+										}}
 										onMouseDown={() => {
 											bodyId2 = index;
 											mouseDown = true;
@@ -489,7 +535,7 @@ function App() {
 			</div>
 			<div>halo</div>
 			<div
-				className="flex fixed bg-background/50 duration-300 text-accent-foreground border p-2 rounded-md flex-col justify-between"
+				className="flex fixed bg-background/50 duration-300 pointer-events-none text-accent-foreground border p-2 rounded-md flex-col justify-between"
 				style={{
 					top: mousePos.y,
 					left: mousePos.x,

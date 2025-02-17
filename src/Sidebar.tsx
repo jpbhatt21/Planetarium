@@ -68,23 +68,24 @@ function AppSidebar({ open }: any) {
 	return (
 		<Sidebar collapsible="icon" variant="floating">
 			<SidebarHeader className="flex w-full flex-row justify-center mt-1  items-center">
-				{open?
-				(
-					<div
-					className=" flex overflow-hidden flex-col mts duration-300 fadein text-xl justify-center"
-					>
-					<label> Planaterium</label>
-					{/* <label className=" tracking-wider"> Playground</label> */}
-				</div>
-				)
-				:svg.logo({ height: "30px", width: "30px", className:"fadein" })}
-				
+				{open ? (
+					<div className=" flex overflow-hidden flex-col mts duration-300 fadein text-xl justify-center">
+						<label> Planaterium</label>
+						{/* <label className=" tracking-wider"> Playground</label> */}
+					</div>
+				) : (
+					svg.logo({
+						height: "30px",
+						width: "30px",
+						className: "fadein",
+					})
+				)}
 			</SidebarHeader>
 			<SidebarContent id="sidebar">
 				{separator}
 
 				<Collapsible
-				id="col1"
+					id="col1"
 					open={open && collapsibles[0]}
 					onOpenChange={(e) => {
 						let temp = [...collapsibles];
@@ -92,139 +93,87 @@ function AppSidebar({ open }: any) {
 						setCollapsibles(temp);
 					}}>
 					<SidebarGroup>
-						
-							
-							{open? (
-								<SidebarGroupLabel className="w-full fadein">
-									<CollapsibleTrigger className="w-full text-start">
-										Universal Settings
-									</CollapsibleTrigger>
-								</SidebarGroupLabel>
-							):<Button className="fadein bg-background border text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300 transition-colors " 
-							onClick={()=>{
-								let slt=document.getElementById("sidebarTrig") as HTMLInputElement;
-								if(slt){
-									slt.click();
-								}
-								let temp=[...collapsibles];
-								temp[0]=true;
-								setCollapsibles(temp);
-								setTimeout(()=>{
-									let sidebar=document.getElementById("sidebar") as HTMLDivElement;
-								let col=document.getElementById("col1") as HTMLDivElement;
-								console.log(col.offsetTop);
-								if(sidebar&&col){
-									sidebar.scrollTop=col.offsetTop-100;
-								}
-								},10);
-							}}
-							>US</Button>}
-						
-						{
-							open&&collapsibles[0]&&(
-								<SidebarGroupContent className="fadein">
-							<CollapsibleContent className="px-2">
-								<SidebarMenu>
-									<SidebarMenuItem className="flex  justify-between h-fit items-center">
-										Speed
-										<Input
-											type="number"
-											value={getVars.speed()}
-											className="text-end"
-											onChange={(e) => {
-												setVars.speed(
-													parseInt(e.target.value)
-												);
-												initPath();
-												let interv = getVars.interv();
-												if (interv != null) {
-													clearInterval(interv);
-													setVars.interv(null);
+						{open ? (
+							<SidebarGroupLabel className="w-full fadein">
+								<CollapsibleTrigger className="w-full text-start">
+									Universal Settings
+								</CollapsibleTrigger>
+							</SidebarGroupLabel>
+						) : (
+							<Button
+								className="fadein bg-background border text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300 transition-colors "
+								onClick={() => {
+									let slt = document.getElementById(
+										"sidebarTrig"
+									) as HTMLInputElement;
+									if (slt) {
+										slt.click();
+									}
+									let temp = [...collapsibles];
+									temp[0] = true;
+									setCollapsibles(temp);
+									setTimeout(() => {
+										let sidebar = document.getElementById(
+											"sidebar"
+										) as HTMLDivElement;
+										let col = document.getElementById(
+											"col1"
+										) as HTMLDivElement;
+										console.log(col.offsetTop);
+										if (sidebar && col) {
+											sidebar.scrollTop =
+												col.offsetTop - 100;
+										}
+									}, 10);
+								}}>
+								US
+							</Button>
+						)}
 
-													getVars.startSimulation();
-												} else {
-													setCenter({
-														x:
-															window.innerWidth /
-															2,
-														y:
-															window.innerHeight /
-															2,
-													});
-												}
-											}}
-										/>
-									</SidebarMenuItem>
-									<SidebarMenuItem className="flex  justify-between h-fit items-center">
-										Forecast Limit
-										<Input
-											type="number"
-											className="text-end"
-											value={getVars.predictionLimit()}
-											onChange={(e) => {
-												setVars.predictionLimit(
-													parseInt(e.target.value)
-												);
-												initPath();
-												setCenter({
-													x: window.innerWidth / 2,
-													y: window.innerHeight / 2,
-												});
-											}}
-										/>
-									</SidebarMenuItem>
-									<SidebarMenuItem className="flex  justify-between h-fit items-center">
-										Trail Limit
-										<Input
-											className="text-end"
-											type="number"
-											value={getVars.maxTrailLength()}
-											onChange={(e) => {
-												setVars.maxTrailLength(
-													parseInt(e.target.value)
-												);
-												setCenter({
-													x: window.innerWidth / 2,
-													y: window.innerHeight / 2,
-												});
-											}}
-										/>
-									</SidebarMenuItem>
-									<SidebarMenuItem className="flex  justify-between h-fit items-center">
-										Gravitational Constant
-										<Input
-											className="text-end"
-											type="number"
-											value={get.G().toFixed(5)}
-											step={0.0001}
-											onChange={(e) => {
-												set.G(
-													parseFloat(e.target.value)
-												);
-												initPath();
-												setCenter({
-													x: window.innerWidth / 2,
-													y: window.innerHeight / 2,
-												});
-											}}
-										/>
-									</SidebarMenuItem>
-									<SidebarMenuItem className="flex  justify-between h-fit items-center">
-										Collision Energy Loss
-										<div className="flex items-center">
+						{open && collapsibles[0] && (
+							<SidebarGroupContent className="fadein">
+								<CollapsibleContent className="px-2">
+									<SidebarMenu>
+										<SidebarMenuItem className="flex  justify-between h-fit items-center">
+											Speed
 											<Input
 												type="number"
-												className=" text-end"
-												value={
-													get.collisionEnergyLoss() *
-													100
-												}
-												step={0.01}
+												value={getVars.speed()}
+												className="text-end"
 												onChange={(e) => {
-													set.collisionEnergyLoss(
-														parseFloat(
-															e.target.value
-														) / 100
+													setVars.speed(
+														parseInt(e.target.value)
+													);
+													initPath();
+													let interv =
+														getVars.interv();
+													if (interv != null) {
+														clearInterval(interv);
+														setVars.interv(null);
+
+														getVars.startSimulation();
+													} else {
+														setCenter({
+															x:
+																window.innerWidth /
+																2,
+															y:
+																window.innerHeight /
+																2,
+														});
+													}
+												}}
+											/>
+										</SidebarMenuItem>
+										<SidebarMenuItem className="flex  justify-between h-fit items-center">
+											Forecast Limit
+											<Input
+												type="number"
+												className="text-end"
+												value={getVars.predictionLimit()}
+												onChange={(e) => {
+													setVars.predictionLimit(
+														parseInt(e.target.value)
 													);
 													initPath();
 													setCenter({
@@ -237,30 +186,71 @@ function AppSidebar({ open }: any) {
 													});
 												}}
 											/>
-											<label className="text-sm mt-[2px] -translate-x-1/2">
-												%
-											</label>
-										</div>
-									</SidebarMenuItem>
-									<SidebarMenuItem className="flex  justify-between h-fit items-center">
-										Scale
-										<Input
-											type="number"
-											id="scale"
-											className="text-end"
-											defaultValue={(
-												getVars.scale() * 100
-											).toFixed(2)}
-											step={0.1}
-											onChange={(e) => {
-												let val = 0;
-												try {
-													val =
+										</SidebarMenuItem>
+										<SidebarMenuItem className="flex  justify-between h-fit items-center">
+											Trail Limit
+											<Input
+												className="text-end"
+												type="number"
+												value={getVars.maxTrailLength()}
+												onChange={(e) => {
+													setVars.maxTrailLength(
+														parseInt(e.target.value)
+													);
+													setCenter({
+														x:
+															window.innerWidth /
+															2,
+														y:
+															window.innerHeight /
+															2,
+													});
+												}}
+											/>
+										</SidebarMenuItem>
+										<SidebarMenuItem className="flex  justify-between h-fit items-center">
+											Gravitational Constant
+											<Input
+												className="text-end"
+												type="number"
+												value={get.G().toFixed(5)}
+												step={0.0001}
+												onChange={(e) => {
+													set.G(
 														parseFloat(
 															e.target.value
-														) / 100;
-													if (val > 0) {
-														setVars.scale(val);
+														)
+													);
+													initPath();
+													setCenter({
+														x:
+															window.innerWidth /
+															2,
+														y:
+															window.innerHeight /
+															2,
+													});
+												}}
+											/>
+										</SidebarMenuItem>
+										<SidebarMenuItem className="flex  justify-between h-fit items-center">
+											Collision Energy Loss
+											<div className="flex items-center">
+												<Input
+													type="number"
+													className=" text-end"
+													value={
+														get.collisionEnergyLoss() *
+														100
+													}
+													step={0.01}
+													onChange={(e) => {
+														set.collisionEnergyLoss(
+															parseFloat(
+																e.target.value
+															) / 100
+														);
+														initPath();
 														setCenter({
 															x:
 																window.innerWidth /
@@ -269,69 +259,133 @@ function AppSidebar({ open }: any) {
 																window.innerHeight /
 																2,
 														});
-													}
-												} catch {}
-											}}
-										/>
-									</SidebarMenuItem>
-									<Collapsible
-										className="mt-1 mb-2"
-										defaultOpen={true}>
-										<SidebarMenuItem className="flex flex-col">
-											<CollapsibleTrigger className="w-full flex justify-between pr-3 items-center text-start">
-												Anchor{" "}
-												<label>
-													{particles[anchor].name}
+													}}
+												/>
+												<label className="text-sm mt-[2px] -translate-x-1/2">
+													%
 												</label>
-											</CollapsibleTrigger>
-											<CollapsibleContent>
-												<SidebarMenuSub className="py-1 gap-1">
-													{particles.map((p, i) => {
-														return (
-															<SidebarMenuSubButton
-																key={i}
-																className="cursor-pointer border"
-																onClick={() => {
-																	console.log(
-																		i
-																	);
-																	setVars.anchor(
-																		i
-																	);
-																	setCenter({
-																		x:
-																			window.innerWidth /
-																			2,
-																		y:
-																			window.innerHeight /
-																			2,
-																	});
-																}}
-																style={{
-																	borderColor:
-																		i ==
-																		anchor
-																			? "#fff1"
-																			: "transparent",
-																}}>
-																{p.name}
-															</SidebarMenuSubButton>
-														);
-													})}
-												</SidebarMenuSub>
-											</CollapsibleContent>
+											</div>
 										</SidebarMenuItem>
-									</Collapsible>
-								</SidebarMenu>
-							</CollapsibleContent>
-						</SidebarGroupContent>
-							)
-						}
+										<SidebarMenuItem className="flex  justify-between h-fit items-center">
+											Scale
+											<Input
+												type="number"
+												id="scale"
+												className="text-end"
+												defaultValue={(
+													getVars.scale() * 100
+												).toFixed(2)}
+												step={0.1}
+												onChange={(e) => {
+													let val = 0;
+													try {
+														val =
+															parseFloat(
+																e.target.value
+															) / 100;
+														if (val > 0) {
+															setVars.scale(val);
+															setCenter({
+																x:
+																	window.innerWidth /
+																	2,
+																y:
+																	window.innerHeight /
+																	2,
+															});
+														}
+													} catch {}
+												}}
+											/>
+										</SidebarMenuItem>
+										<Collapsible
+											className="mt-1 mb-2"
+											defaultOpen={true}>
+											<SidebarMenuItem className="flex flex-col">
+												<CollapsibleTrigger className="w-full flex justify-between pr-3 items-center text-start">
+													Anchor{" "}
+													<label>
+														{anchor > 0
+															? particles[anchor-1]
+																	.name
+															: "Free"}
+													</label>
+												</CollapsibleTrigger>
+												<CollapsibleContent>
+													<SidebarMenuSub className="py-1 gap-1">
+														<SidebarMenuSubButton
+															key={-1}
+															className="cursor-pointer border"
+															onClick={() => {
+																setVars.anchor(
+																	0
+																);
+																setCenter({
+																	x:
+																		window.innerWidth /
+																		2,
+																	y:
+																		window.innerHeight /
+																		2,
+																});
+															}}
+															style={{
+																borderColor:
+																	0 ==
+																	anchor
+																		? "#fff1"
+																		: "transparent",
+															}}>
+															{"[Free]"}
+														</SidebarMenuSubButton>
+														{particles.map(
+															(p, i) => {
+																return (
+																	<SidebarMenuSubButton
+																		key={i}
+																		className="cursor-pointer border"
+																		onClick={() => {
+																			setVars.anchor(
+																				i +
+																					1
+																			);
+																			setCenter(
+																				{
+																					x:
+																						window.innerWidth /
+																						2,
+																					y:
+																						window.innerHeight /
+																						2,
+																				}
+																			);
+																		}}
+																		style={{
+																			borderColor:
+																				i +
+																					1 ==
+																				anchor
+																					? "#fff1"
+																					: "transparent",
+																		}}>
+																		{p.name}
+																	</SidebarMenuSubButton>
+																);
+															}
+														)}
+													</SidebarMenuSub>
+												</CollapsibleContent>
+											</SidebarMenuItem>
+										</Collapsible>
+									</SidebarMenu>
+								</CollapsibleContent>
+							</SidebarGroupContent>
+						)}
 					</SidebarGroup>
 				</Collapsible>
 				{separator}
 				<Collapsible
-				id="col2"
+					id="col2"
 					open={open && collapsibles[1]}
 					onOpenChange={(e) => {
 						let temp = [...collapsibles];
@@ -339,8 +393,8 @@ function AppSidebar({ open }: any) {
 						setCollapsibles(temp);
 					}}>
 					<SidebarGroup>
-						{
-							open?(<SidebarGroupLabel>
+						{open ? (
+							<SidebarGroupLabel>
 								<CollapsibleTrigger className="w-full fadein flex justify-between items-center">
 									Bodies
 									<SidebarMenuButton
@@ -384,12 +438,19 @@ function AppSidebar({ open }: any) {
 													(particles.length + 1),
 												mass: 10,
 												radius: 10,
-												position: { x: pos.x, y: pos.y },
-												velocity: { x: vel.x, y: vel.y },
+												position: {
+													x: pos.x,
+													y: pos.y,
+												},
+												velocity: {
+													x: vel.x,
+													y: vel.y,
+												},
 												static: false,
 												fixedColor: false,
 												color: theme.nord.aurora[beta],
-												trailColor: theme.nord.dark[alpha],
+												trailColor:
+													theme.nord.dark[alpha],
 												futureColor:
 													theme.nord.aurora[beta],
 											});
@@ -397,7 +458,9 @@ function AppSidebar({ open }: any) {
 												getVars.pastPositions();
 											let count = getVars.count();
 											let paths = getVars.paths();
-											pastPositions.push([[pos.x, pos.y]]);
+											pastPositions.push([
+												[pos.x, pos.y],
+											]);
 											count.push(0);
 											paths.push([]);
 											setVars.pastPositions([
@@ -406,7 +469,9 @@ function AppSidebar({ open }: any) {
 											setVars.count([...count]);
 											setVars.paths([...paths]);
 											setVars.bodies([...particles]);
-											getVars.setParticles()([...particles]);
+											getVars.setParticles()([
+												...particles,
+											]);
 											initPath();
 											e.currentTarget.blur();
 											setCenter({
@@ -418,29 +483,40 @@ function AppSidebar({ open }: any) {
 										+
 									</SidebarMenuButton>
 								</CollapsibleTrigger>
-							</SidebarGroupLabel>):<Button className="fadein bg-background border text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300 transition-colors " 
-							onClick={()=>{
-								let slt=document.getElementById("sidebarTrig") as HTMLInputElement;
-								if(slt){
-									slt.click();
-								}
-								let temp=[...collapsibles];
-								temp[1]=true;
-								setCollapsibles(temp);
-								setTimeout(()=>{
-									let sidebar=document.getElementById("sidebar") as HTMLDivElement;
-								let col=document.getElementById("col2") as HTMLDivElement;
-								console.log(col.offsetTop);
-								if(sidebar&&col){
-									sidebar.scrollTop=col.offsetTop-100;
-								}
-								},10);
-							}}
-							>BD</Button>
-						}
+							</SidebarGroupLabel>
+						) : (
+							<Button
+								className="fadein bg-background border text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300 transition-colors "
+								onClick={() => {
+									let slt = document.getElementById(
+										"sidebarTrig"
+									) as HTMLInputElement;
+									if (slt) {
+										slt.click();
+									}
+									let temp = [...collapsibles];
+									temp[1] = true;
+									setCollapsibles(temp);
+									setTimeout(() => {
+										let sidebar = document.getElementById(
+											"sidebar"
+										) as HTMLDivElement;
+										let col = document.getElementById(
+											"col2"
+										) as HTMLDivElement;
+										console.log(col.offsetTop);
+										if (sidebar && col) {
+											sidebar.scrollTop =
+												col.offsetTop - 100;
+										}
+									}, 10);
+								}}>
+								BD
+							</Button>
+						)}
 
-						{
-							open&&collapsibles[1]&&(<SidebarGroupContent className="fadein">
+						{open && collapsibles[1] && (
+							<SidebarGroupContent className="fadein">
 								<CollapsibleContent className="pr-2 pb-1">
 									<SidebarMenu>
 										{particles.map((particle, index) => {
@@ -460,17 +536,23 @@ function AppSidebar({ open }: any) {
 																	"nameInput" +
 																	index
 																}
-																onClick={(e) => {
+																onClick={(
+																	e
+																) => {
 																	e.currentTarget.blur();
 																}}
-																onChange={(e) => {
+																onChange={(
+																	e
+																) => {
 																	particles[
 																		index
 																	].name =
 																		e.target.value;
-																	setVars.bodies([
-																		...particles,
-																	]);
+																	setVars.bodies(
+																		[
+																			...particles,
+																		]
+																	);
 																	initPath();
 																	setCenter({
 																		x:
@@ -504,47 +586,50 @@ function AppSidebar({ open }: any) {
 																		e
 																	) => {
 																		e.preventDefault();
-																		let ref = {
-																			x: particles[
-																				index
-																			]
-																				.position
-																				.x,
-																			y: particles[
-																				index
-																			]
-																				.position
-																				.y,
-																		};
+																		let ref =
+																			{
+																				x: particles[
+																					index
+																				]
+																					.position
+																					.x,
+																				y: particles[
+																					index
+																				]
+																					.position
+																					.y,
+																			};
 																		let refRad =
 																			particles[
 																				index
 																			]
 																				.radius;
-																		let pos = {
-																			x:
-																				ref.x +
-																				(Math.random() +
-																					5) *
-																					refRad *
-																					(Math.random() <
-																					0.5
-																						? 1
-																						: -1),
-																			y:
-																				ref.y +
-																				(Math.random() +
-																					5) *
-																					refRad *
-																					(Math.random() <
-																					0.5
-																						? 1
-																						: -1),
-																		};
-																		let vel = {
-																			x: 0, //Math.random() * 0.2 - 0.1,
-																			y: 0, // Math.random() * 0.2 - 0.1,
-																		};
+																		let pos =
+																			{
+																				x:
+																					ref.x +
+																					(Math.random() +
+																						5) *
+																						refRad *
+																						(Math.random() <
+																						0.5
+																							? 1
+																							: -1),
+																				y:
+																					ref.y +
+																					(Math.random() +
+																						5) *
+																						refRad *
+																						(Math.random() <
+																						0.5
+																							? 1
+																							: -1),
+																			};
+																		let vel =
+																			{
+																				x: 0, //Math.random() * 0.2 - 0.1,
+																				y: 0, // Math.random() * 0.2 - 0.1,
+																			};
 																		let rand =
 																			Math.random();
 																		let alpha =
@@ -654,14 +739,16 @@ function AppSidebar({ open }: any) {
 																		);
 																		initPath();
 																		e.currentTarget.blur();
-																		setCenter({
-																			x:
-																				window.innerWidth /
-																				2,
-																			y:
-																				window.innerHeight /
-																				2,
-																		});
+																		setCenter(
+																			{
+																				x:
+																					window.innerWidth /
+																					2,
+																				y:
+																					window.innerHeight /
+																					2,
+																			}
+																		);
 																	}}></SidebarMenuButton>
 																<SidebarMenuButton
 																	variant="outline"
@@ -719,14 +806,16 @@ function AppSidebar({ open }: any) {
 																		);
 																		initPath();
 																		e.currentTarget.blur();
-																		setCenter({
-																			x:
-																				window.innerWidth /
-																				2,
-																			y:
-																				window.innerHeight /
-																				2,
-																		});
+																		setCenter(
+																			{
+																				x:
+																					window.innerWidth /
+																					2,
+																				y:
+																					window.innerHeight /
+																					2,
+																			}
+																		);
 																	}}></SidebarMenuButton>
 															</div>
 														</CollapsibleTrigger>
@@ -999,7 +1088,7 @@ function AppSidebar({ open }: any) {
 																			particle.static
 																		}
 																		onCheckedChange={(
-																			checked
+																			checked: boolean
 																		) => {
 																			particles[
 																				index
@@ -1031,7 +1120,7 @@ function AppSidebar({ open }: any) {
 																			particle.fixedColor
 																		}
 																		onCheckedChange={(
-																			checked
+																			checked: boolean
 																		) => {
 																			particles[
 																				index
@@ -1128,7 +1217,8 @@ function AppSidebar({ open }: any) {
 																	/>
 																</SidebarMenuSubItem>
 																<SidebarMenuSubItem className="flex  justify-between  -mr-2 h-fit items-center">
-																	Forecast Color
+																	Forecast
+																	Color
 																	<Input
 																		type="color"
 																		className="w-1/2"
@@ -1168,8 +1258,8 @@ function AppSidebar({ open }: any) {
 										})}
 									</SidebarMenu>
 								</CollapsibleContent>
-							</SidebarGroupContent>)
-						}
+							</SidebarGroupContent>
+						)}
 					</SidebarGroup>
 				</Collapsible>
 				{separator}
@@ -1182,101 +1272,92 @@ function AppSidebar({ open }: any) {
 						setCollapsibles(temp);
 					}}>
 					<SidebarGroup>
-						{
-							open?(<SidebarGroupLabel>
+						{open ? (
+							<SidebarGroupLabel>
 								<CollapsibleTrigger className="w-full fadein text-start">
 									Presets
 								</CollapsibleTrigger>
-							</SidebarGroupLabel>):<Button className="fadein bg-background border text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300 transition-colors " 
-							onClick={()=>{
-								let slt=document.getElementById("sidebarTrig") as HTMLInputElement;
-								if(slt){
-									slt.click();
-								}
-								let temp=[...collapsibles];
-								temp[2]=true;
-								setCollapsibles(temp);
-								setTimeout(()=>{
-									let sidebar=document.getElementById("sidebar") as HTMLDivElement;
-								let col=document.getElementById("col3") as HTMLDivElement;
-								console.log(col.offsetTop);
-								if(sidebar&&col){
-									sidebar.scrollTop=col.offsetTop;
-								}
-								},10);
-							}}
-							>PR</Button>
-						}
-						{
-							open&&collapsibles[2]&&(
-								<SidebarGroupContent className="fadein">
-							<CollapsibleContent className="px-2">
-								{getVars.presets().map((p, index) => {
-									return (
-										<SidebarMenuSubButton
-											key={index}
-											className=" cursor-pointer"
-											onClick={(e) => {
-												let prt = JSON.parse(
-													JSON.stringify(p.data())
-												);
-												let scale = p.scale;
-												let ele =
-													document.getElementById(
-														"scale"
-													) as HTMLInputElement;
-												if (ele)
-													ele.value = (
-														scale * 100
-													).toString();
-												setVars.bodies([...prt]);
-												setVars.scale(scale);
-												getVars.setParticles()([
-													...prt,
-												]);
-												initPath();
-												setCenter({
-													x: window.innerWidth / 2,
-													y: window.innerHeight / 2,
-												});
-												let side =
-													document.getElementById(
-														"sidebar"
-													);
-												if (side) {
-													setTimeout(() => {
-														side.scrollTop =
-															side.scrollHeight;
-													}, 50);
-												}
-												e.currentTarget.blur();
-											}}>
-											{" "}
-											{p.name}
-										</SidebarMenuSubButton>
-									);
-								})}
-							</CollapsibleContent>
-						</SidebarGroupContent>
-							)
-						}
+							</SidebarGroupLabel>
+						) : (
+							<Button
+								className="fadein bg-background border text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300 transition-colors "
+								onClick={() => {
+									let slt = document.getElementById(
+										"sidebarTrig"
+									) as HTMLInputElement;
+									if (slt) {
+										slt.click();
+									}
+									let temp = [...collapsibles];
+									temp[2] = true;
+									setCollapsibles(temp);
+									setTimeout(() => {
+										let sidebar = document.getElementById(
+											"sidebar"
+										) as HTMLDivElement;
+										let col = document.getElementById(
+											"col3"
+										) as HTMLDivElement;
+										console.log(col.offsetTop);
+										if (sidebar && col) {
+											sidebar.scrollTop = col.offsetTop;
+										}
+									}, 10);
+								}}>
+								PR
+							</Button>
+						)}
+						{open && collapsibles[2] && (
+							<SidebarGroupContent className="fadein">
+								<CollapsibleContent className="px-2">
+									{getVars.presets().map((p, index) => {
+										return (
+											<SidebarMenuSubButton
+												key={index}
+												className=" cursor-pointer"
+												onClick={(e) => {
+													setImportedData(p.data)
+													let side =
+														document.getElementById(
+															"sidebar"
+														);
+													if (side) {
+														setTimeout(() => {
+															side.scrollTop =
+																side.scrollHeight;
+														}, 1);
+													}
+													e.currentTarget.blur();
+												}}>
+												{" "}
+												{p.name}
+											</SidebarMenuSubButton>
+										);
+									})}
+								</CollapsibleContent>
+							</SidebarGroupContent>
+						)}
 					</SidebarGroup>
 				</Collapsible>
 				{separator}
 			</SidebarContent>
-			<SidebarFooter className="flex w-full  justify-center items-center"
-			style={{
-				flexDirection:open?"row":"column"
-			}}
-			>
+			<SidebarFooter
+				className="flex w-full  justify-center items-center"
+				style={{
+					flexDirection: open ? "row" : "column",
+				}}>
 				<AlertDialog>
-					<AlertDialogTrigger 
-					style={{
-						width:open?"50%":"100%"
-					}}
-					>
-						<SidebarMenuButton className="w-full h-10 bg-background text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300  items-center justify-center border" style={{transitionProperty:"width, color, background-color"}}>
-							{open?"Import":"Imp"}
+					<AlertDialogTrigger
+						style={{
+							width: open ? "50%" : "100%",
+						}}>
+						<SidebarMenuButton
+							className="w-full h-10 bg-background text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300  items-center justify-center border"
+							style={{
+								transitionProperty:
+									"width, color, background-color",
+							}}>
+							{open ? "Import" : "Imp"}
 						</SidebarMenuButton>
 					</AlertDialogTrigger>
 					<AlertDialogContent>
@@ -1367,7 +1448,6 @@ function AppSidebar({ open }: any) {
 												x: window.innerWidth / 2,
 												y: window.innerHeight / 2,
 											});
-											alert("Imported Successfully");
 										};
 										reader.readAsText(file);
 									} else {
@@ -1381,7 +1461,6 @@ function AppSidebar({ open }: any) {
 												x: window.innerWidth / 2,
 												y: window.innerHeight / 2,
 											});
-											alert("Imported Successfully");
 										} catch (e) {
 											alert("Invalid JSON");
 										}
@@ -1393,13 +1472,20 @@ function AppSidebar({ open }: any) {
 					</AlertDialogContent>
 				</AlertDialog>
 				<DropdownMenu>
-					<DropdownMenuTrigger onFocus={(e)=>{
-						e.currentTarget.blur();
-					}} style={{
-						width:open?"50%":"100%"
-					}}>
-						<SidebarMenuButton className="w-full h-10  bg-background text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300    items-center justify-center border" style={{transitionProperty:"width, color, background-color"}}>
-							{open?"Export":"Exp"}
+					<DropdownMenuTrigger
+						onFocus={(e) => {
+							e.currentTarget.blur();
+						}}
+						style={{
+							width: open ? "50%" : "100%",
+						}}>
+						<SidebarMenuButton
+							className="w-full h-10  bg-background text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300    items-center justify-center border"
+							style={{
+								transitionProperty:
+									"width, color, background-color",
+							}}>
+							{open ? "Export" : "Exp"}
 						</SidebarMenuButton>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent className="w-56 mb-2 ml -80 justify-center items-center flex flex-col bg-background border rounded-md">
@@ -1490,7 +1576,6 @@ function AppSidebar({ open }: any) {
 						</DropdownMenuGroup>
 					</DropdownMenuContent>
 				</DropdownMenu>
-				
 			</SidebarFooter>
 		</Sidebar>
 	);
