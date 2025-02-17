@@ -20,12 +20,25 @@ import {
 	SidebarMenuSubItem,
 } from "./components/ui/sidebar";
 import { set, get } from "./helper";
-import { getVars, setVars } from "./vars";
+import { getVars, setImportedData, setVars } from "./vars";
 import { svg } from "./vectors";
 import { theme } from "./theme";
 import { Checkbox } from "./components/ui/checkbox";
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./components/ui/alert-dialog";
-import { AlertDialogCancel, AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "./components/ui/alert-dialog";
+import {
+	AlertDialogCancel,
+	AlertDialogTrigger,
+} from "@radix-ui/react-alert-dialog";
+import { Textarea } from "./components/ui/textarea";
+import { Button } from "./components/ui/button";
 let initPath = getVars.initPath();
 let setCenter = getVars.setCenter();
 const separator = (
@@ -1154,19 +1167,179 @@ function AppSidebar({ open }: any) {
 					</AlertDialogTrigger>
 					<AlertDialogContent>
 						<AlertDialogHeader>
-							<AlertDialogTitle>
-								Are you absolutely sure?
+							<AlertDialogTitle className="text-center mb-4">
+								Import Data
 							</AlertDialogTitle>
-							<AlertDialogDescription>
-								
+							<AlertDialogDescription className="flex  flex-col gap-2 items-center">
+								<Textarea
+									placeholder="Paste text or file here..."
+									autoFocus={true}
+									id="pastebox"
+									onPaste={(e) => {
+										if (e.clipboardData.files.length > 0) {
+											e.preventDefault();
+											let file = e.clipboardData.files[0];
+											console.log(file.type);
+											if (
+												file.type == "application/json"
+											) {
+												let filebox =
+													document.getElementById(
+														"filebox"
+													) as HTMLInputElement;
+												let label =
+													document.getElementById(
+														"filelabel"
+													) as HTMLLabelElement;
+												filebox.files =
+													e.clipboardData.files;
+												label.innerText = file.name;
+											}
+										}
+									}}
+									className="w-[29rem] border-dashed py-3 h-40 resize-none"
+								/>
+								or
+								<Input
+									type="file"
+									id="filebox"
+									className="hidden"
+									accept="application/JSON"
+									onChange={(e) => {
+										let label = document.getElementById(
+											"filelabel"
+										) as HTMLLabelElement;
+										if (e.target.files != null) {
+											label.innerText =
+												e.target.files[0].name;
+										} else {
+											label.innerText = "Choose File";
+										}
+									}}
+								/>
+								<label
+									htmlFor="filebox"
+									id="filelabel"
+									className="cursor-pointer p-4 rounded-sm border items-center justify-center flex">
+									Choose File
+								</label>
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
-							<AlertDialogCancel>Cancel</AlertDialogCancel>
-							<AlertDialogAction>Continue</AlertDialogAction>
+							<AlertDialogCancel className="mr-1 bg-background w-24 rounded-md text-nord-aurora-red hover:bg-nord-aurora-red hover:text-primary-foreground duration-300 transition-colors">
+								Cancel
+							</AlertDialogCancel>
+							<AlertDialogAction
+								className=" bg-background border w-24 text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300 transition-colors"
+								onClick={() => {
+									let pastebox = document.getElementById(
+										"pastebox"
+									) as HTMLTextAreaElement;
+									let filebox = document.getElementById(
+										"filebox"
+									) as HTMLInputElement;
+									if (filebox.files != null) {
+										let file = filebox.files[0];
+										if (file == null) return;
+										let reader = new FileReader();
+										reader.onload = (e) => {
+											let data = JSON.parse(
+												e.target?.result as string
+											);
+											setImportedData(data);
+											setCenter({
+												x: window.innerWidth / 2,
+												y: window.innerHeight / 2,
+											});
+											alert("Imported Successfully");
+										};
+										reader.readAsText(file);
+									} else {
+										try {
+											let data = JSON.parse(
+												pastebox.value
+											);
+											setImportedData(data);
+											setCenter({
+												x: window.innerWidth / 2,
+												y: window.innerHeight / 2,
+											});
+											alert("Imported Successfully");
+										} catch (e) {
+											alert("Invalid JSON");
+										}
+									}
+								}}>
+								Import
+							</AlertDialogAction>
 						</AlertDialogFooter>
 					</AlertDialogContent>
 				</AlertDialog>
+				{/* <AlertDialog>
+					<AlertDialogTrigger className="w-1/2">
+						<SidebarMenuButton className="w-full h-10 ring-0  items-center justify-center border">
+							Export
+						</SidebarMenuButton>
+					</AlertDialogTrigger>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle className="text-center mb-4">
+								Export Data
+							</AlertDialogTitle>
+							<AlertDialogDescription className="flex  flex-col gap-2 items-center">
+								<Button>Copy to Clip</Button>
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel className="mr-1 bg-background w-24 rounded-md text-nord-aurora-red hover:bg-nord-aurora-red hover:text-primary-foreground duration-300 transition-colors">
+								Cancel
+							</AlertDialogCancel>
+							<AlertDialogAction
+								className=" bg-background border w-24 text-accent-foreground hover:bg-accent-foreground hover:text-primary-foreground duration-300 transition-colors"
+								onClick={() => {
+									let pastebox = document.getElementById(
+										"pastebox"
+									) as HTMLTextAreaElement;
+									let filebox = document.getElementById(
+										"filebox"
+									) as HTMLInputElement;
+									if (filebox.files != null) {
+										let file = filebox.files[0];
+										if (file == null) return;
+										let reader = new FileReader();
+										reader.onload = (e) => {
+											let data = JSON.parse(
+												e.target?.result as string
+											);
+											setImportedData(data);
+											setCenter({
+												x: window.innerWidth / 2,
+												y: window.innerHeight / 2,
+											});
+											alert("Imported Successfully");
+										};
+										reader.readAsText(file);
+									} else {
+										try {
+											let data = JSON.parse(
+												pastebox.value
+											);
+											setImportedData(data);
+											setCenter({
+												x: window.innerWidth / 2,
+												y: window.innerHeight / 2,
+											});
+											alert("Imported Successfully");
+										} catch (e) {
+											alert("Invalid JSON");
+										}
+									}
+								}}>
+								Import
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog> */}
 			</SidebarFooter>
 		</Sidebar>
 	);

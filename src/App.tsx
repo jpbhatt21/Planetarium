@@ -32,39 +32,19 @@ function getColor(velocity: any) {
     return `rgb(${r},${g},${b})`;
 }
 
-// let planet = {
-// 	name: "planet",
-// 	mass: 10000,
-// 	radius: 50,
-// 	position: { x: 500, y: 500 },
-// 	velocity: { x: 0.1, y: 0.1 },
-// 	static: false,
-// 	fixedColor: true,
-// 	color: theme.nord.frost.d,
-// 	trailColor: theme.nord.frost.a,
-// 	futureColor: theme.nord.frost.c,
-// };
-// function setImportedData(data: any) {
-// 	if (data.version != version) {
-// 		alert("Version mismatch");
-// 		return;
-// 	}
-// 	predictionLimit = data.predictionLimit;
-// 	maxTrailLength = data.maxTrailLength;
-// 	setVars.speed(data.deltaT);
-// 	scale = data.scale;
-// 	let ele = document.getElementById("scale") as HTMLInputElement;
-// 	if (ele) ele.value = (scale * 100).toString();
-// 	set.G(data.G);
-// 	set.collisionEnergyLoss(data.collisionEnergyLoss);
-// 	prt = data.particles;
-// 	ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-// 	off = {
-// 		x: ctr.x - prt[0].position.x * scale,
-// 		y: ctr.y - prt[0].position.y * scale,
-// 	};
-// 	initPath();
-// }
+let planet = {
+	name: "planet",
+	mass: 10000,
+	radius: 50,
+	position: { x: 500, y: 500 },
+	velocity: { x: 0.1, y: 0.1 },
+	static: false,
+	fixedColor: true,
+	color: theme.nord.frost.d,
+	trailColor: theme.nord.frost.a,
+	futureColor: theme.nord.frost.c,
+};
+
 let initPath=getVars.initPath()
 let getSVGPath=getVars.getSVGPath
 let bodies = getVars.bodies();

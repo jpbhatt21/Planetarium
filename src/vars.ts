@@ -1,4 +1,4 @@
-import { distance, simulate } from "./helper";
+import { distance, set, simulate } from "./helper";
 import { theme } from "./theme";
 
 let object = {
@@ -285,7 +285,30 @@ function scaledBG() {
     );
 }
 
-
+export function setImportedData(data: any) {
+	// if (data.version != version) {
+	// 	alert("Version mismatch");
+	// 	return;
+	// }
+	predictionLimit = data.predictionLimit;
+	maxTrailLength = data.maxTrailLength;
+	setVars.speed(data.deltaT);
+	scale = data.scale;
+	let ele = document.getElementById("scale") as HTMLInputElement;
+	if (ele) ele.value = (scale * 100).toString();
+	set.G(data.G);
+	set.collisionEnergyLoss(data.collisionEnergyLoss);
+	bodies = data.particles;
+	let ctr = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    setCenter(ctr);
+    setParticles([...bodies]);
+    anchor = 0;
+	// setF{
+	// 	x: ctr.x - bodies[0].position.x * scale,
+	// 	y: ctr.y - bodies[0].position.y * scale,
+	// };
+	initPath();
+}
 
 let setParticles:any=null
 let setCenter:any=null
